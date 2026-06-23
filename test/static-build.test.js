@@ -27,6 +27,12 @@ const toolRoutes = [
   "fuel-cost-calculator"
 ];
 
+function extractJsonLd(html) {
+  const match = html.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/);
+  assert.ok(match, "JSON-LD 스크립트가 있어야 합니다.");
+  return JSON.parse(match[1]);
+}
+
 test("static build contains all search landing pages", () => {
   assert.ok(fs.existsSync(path.join(DIST, "index.html")));
   assert.ok(fs.existsSync(path.join(DIST, "404.html")));
@@ -83,6 +89,12 @@ test("trust pages expose indexable SEO metadata", () => {
     assert.match(html, /<meta name="robots" content="index, follow" \/>/);
     assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}${route}"`));
     assert.match(html, new RegExp(`<meta property="og:url" content="${SITE_URL}${route}"`));
+    const jsonLd = extractJsonLd(html);
+    const organization = jsonLd["@graph"].find((item) => item["@type"] === "Organization");
+    const webPage = jsonLd["@graph"].find((item) => item["@type"] === "WebPage");
+    assert.equal(organization["@id"], `${SITE_URL}/#organization`);
+    assert.equal(webPage.url, `${SITE_URL}${route}`);
+    assert.deepEqual(webPage.publisher, { "@id": organization["@id"] });
     assert.doesNotMatch(html, /href="\/(?:about|terms|privacy|contact)\.html"/);
     assert.doesNotMatch(html, /localhost|127\.0\.0\.1/);
   }

@@ -47,6 +47,30 @@ function writeFile(relativePath, contents) {
   fs.writeFileSync(destination, contents);
 }
 
+function trustPageStructuredData(meta, canonical) {
+  const siteRoot = process.env.SITE_URL;
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteRoot}/#organization`,
+        name: "하루툴",
+        url: `${siteRoot}/`,
+        logo: `${siteRoot}/favicon.svg`
+      },
+      {
+        "@type": "WebPage",
+        name: meta.title,
+        url: canonical,
+        description: meta.description,
+        inLanguage: "ko-KR",
+        publisher: { "@id": `${siteRoot}/#organization` }
+      }
+    ]
+  }).replaceAll("<", "\\u003c");
+}
+
 function renderTrustPage(relativePath) {
   const meta = TRUST_PAGES[relativePath];
   const cleanRoute = `/${relativePath.replace(/\.html$/, "")}`;
@@ -73,8 +97,9 @@ function renderTrustPage(relativePath) {
     `<meta property="og:locale" content="ko_KR" />`,
     searchVerification
   ].filter(Boolean).join("\n    ");
+  const structuredData = `<script type="application/ld+json">\n      ${trustPageStructuredData(meta, canonical)}\n    </script>`;
 
-  return html.replace(/(\s*<link rel="stylesheet")/, `\n    ${seoTags}$1`);
+  return html.replace(/(\s*<link rel="stylesheet")/, `\n    ${seoTags}\n    ${structuredData}$1`);
 }
 
 function copyPublicAssets() {
