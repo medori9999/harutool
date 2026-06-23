@@ -38,6 +38,14 @@ npm run verify
 
 구문 검사와 함께 전체 도구 URL, 검색 메타데이터, canonical, 구조화 데이터, 사이트맵, robots.txt, 404와 신뢰 페이지를 실제 HTTP 요청으로 검사합니다. Cloudflare Pages용 정적 산출물도 함께 생성하고 검사합니다.
 
+검색 등록·분석·광고 준비 상태만 빠르게 점검하려면:
+
+```bash
+npm run audit:launch
+```
+
+이 명령은 `dist` 산출물 기준으로 공개 URL, sitemap/robots, canonical, 구조화 데이터, 보안 헤더, 리다이렉트, AdSense와 Cloudflare Web Analytics 준비 상태를 확인합니다.
+
 ## 배포 환경 변수
 
 - `PORT`: 서버 포트

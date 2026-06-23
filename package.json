@@ -8,10 +8,11 @@
     "dev": "node --watch server.js",
     "build:static": "node scripts/build-static.js",
     "build": "npm run build:static && npm run test:static",
-    "check": "node --check server.js && node --check public/app.js && node --check scripts/build-static.js && node --check test/smoke.test.js && node --check test/static-build.test.js",
+    "check": "node --check server.js && node --check public/app.js && node --check scripts/build-static.js && node --check scripts/launch-audit.js && node --check test/smoke.test.js && node --check test/static-build.test.js",
     "test": "node --test test/smoke.test.js",
     "test:static": "node --test test/static-build.test.js",
-    "verify": "npm run check && npm test && CF_PAGES_URL=https://preview.harutool.pages.dev npm run build"
+    "audit:launch": "node scripts/launch-audit.js",
+    "verify": "npm run check && npm test && CF_PAGES_URL=https://preview.harutool.pages.dev npm run build && npm run audit:launch"
   },
   "engines": {
     "node": ">=18"

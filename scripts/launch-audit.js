@@ -1,0 +1,135 @@
+const fs = require("node:fs");
+const path = require("node:path");
+
+const ROOT = path.resolve(__dirname, "..");
+const DIST = path.join(ROOT, "dist");
+const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
+
+const requiredFiles = [
+  "index.html",
+  "404.html",
+  "robots.txt",
+  "sitemap.xml",
+  "_headers",
+  "_redirects",
+  "about.html",
+  "terms.html",
+  "privacy.html",
+  "contact.html"
+];
+
+const requiredPublicRoutes = [
+  "/",
+  "/about",
+  "/terms",
+  "/privacy",
+  "/contact",
+  "/tools/character-counter",
+  "/tools/percentage-calculator",
+  "/tools/discount-calculator",
+  "/tools/dday-calculator",
+  "/tools/random-picker",
+  "/tools/password-generator",
+  "/tools/text-cleaner",
+  "/tools/pyeong-calculator",
+  "/tools/age-calculator",
+  "/tools/unit-converter",
+  "/tools/loan-calculator",
+  "/tools/compound-interest-calculator",
+  "/tools/time-calculator",
+  "/tools/average-calculator",
+  "/tools/vat-calculator",
+  "/tools/margin-calculator",
+  "/tools/fuel-cost-calculator"
+];
+
+const checks = [];
+
+function pass(message) {
+  checks.push({ ok: true, message });
+}
+
+function fail(message) {
+  checks.push({ ok: false, message });
+}
+
+function readDist(relativePath) {
+  return fs.readFileSync(path.join(DIST, relativePath), "utf8");
+}
+
+function expect(condition, message) {
+  if (condition) pass(message);
+  else fail(message);
+}
+
+expect(fs.existsSync(DIST), "dist 산출물 디렉터리가 있습니다.");
+
+for (const file of requiredFiles) {
+  expect(fs.existsSync(path.join(DIST, file)), `${file} 파일이 있습니다.`);
+}
+
+if (fs.existsSync(path.join(DIST, "robots.txt")) && fs.existsSync(path.join(DIST, "sitemap.xml"))) {
+  const robots = readDist("robots.txt");
+  const sitemap = readDist("sitemap.xml");
+  const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
+
+  expect(robots.includes(`Sitemap: ${SITE_URL}/sitemap.xml`), "robots.txt가 공개 sitemap URL을 가리킵니다.");
+  expect(!/localhost|127\.0\.0\.1/.test(sitemap), "sitemap에 로컬 주소가 없습니다.");
+  expect(lastmods.length === sitemapLocations.length, "sitemap의 모든 URL에 lastmod가 있습니다.");
+
+  for (const route of requiredPublicRoutes) {
+    expect(sitemapLocations.includes(`${SITE_URL}${route}`), `sitemap에 ${route}가 있습니다.`);
+  }
+}
+
+if (fs.existsSync(path.join(DIST, "index.html"))) {
+  const index = readDist("index.html");
+  expect(index.includes(`<link rel="canonical" href="${SITE_URL}/"`), "홈 canonical이 공개 URL입니다.");
+  expect(index.includes('"@type":"Organization"'), "홈 구조화 데이터에 Organization이 있습니다.");
+  expect(index.includes('"@type":"ItemList"'), "홈 구조화 데이터에 도구 목록이 있습니다.");
+  expect(!index.includes("{{"), "홈 HTML에 템플릿 자리표시자가 남아 있지 않습니다.");
+}
+
+if (fs.existsSync(path.join(DIST, "_headers"))) {
+  const headers = readDist("_headers");
+  expect(headers.includes("X-Content-Type-Options: nosniff"), "보안 헤더 nosniff가 설정되어 있습니다.");
+  expect(headers.includes("X-Frame-Options: DENY"), "프레임 차단 헤더가 설정되어 있습니다.");
+  expect(headers.includes("Permissions-Policy:"), "권한 정책 헤더가 설정되어 있습니다.");
+  expect(headers.includes("Cache-Control: public, max-age=31536000, immutable"), "정적 자산 장기 캐시가 설정되어 있습니다.");
+}
+
+if (fs.existsSync(path.join(DIST, "_redirects"))) {
+  const redirects = readDist("_redirects");
+  for (const route of ["/about", "/terms", "/privacy", "/contact"]) {
+    expect(redirects.includes(`${route}.html ${route} 301`), `${route}.html 리다이렉트가 있습니다.`);
+  }
+}
+
+if (process.env.ADSENSE_CLIENT) {
+  expect(/^ca-pub-\d{16}$/.test(process.env.ADSENSE_CLIENT), "ADSENSE_CLIENT 형식이 올바릅니다.");
+  expect(fs.existsSync(path.join(DIST, "ads.txt")), "AdSense 설정 시 ads.txt가 생성됩니다.");
+} else {
+  pass("AdSense 미설정 상태입니다. 승인 전이면 정상입니다.");
+}
+
+if (process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN) {
+  const htmlFiles = ["index.html", "privacy.html"].filter((file) => fs.existsSync(path.join(DIST, file)));
+  for (const file of htmlFiles) {
+    expect(readDist(file).includes("static.cloudflareinsights.com/beacon.min.js"), `${file}에 Cloudflare Web Analytics가 삽입됩니다.`);
+  }
+} else {
+  pass("Cloudflare Web Analytics 토큰 미설정 상태입니다. 토큰 추가 전이면 정상입니다.");
+}
+
+for (const check of checks) {
+  console.log(`${check.ok ? "✓" : "✗"} ${check.message}`);
+}
+
+const failures = checks.filter((check) => !check.ok);
+if (failures.length) {
+  console.error(`\n출시 점검 실패: ${failures.length}개 항목을 확인하세요.`);
+  process.exit(1);
+}
+
+console.log("\n출시 점검 통과");
