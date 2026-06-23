@@ -61,3 +61,13 @@ test("static build contains crawler and trust files", () => {
   assert.match(robots, new RegExp(`Sitemap: ${SITE_URL}/sitemap\\.xml`));
   assert.doesNotMatch(sitemap, /localhost|127\.0\.0\.1/);
 });
+
+test("trust pages expose indexable SEO metadata", () => {
+  for (const file of ["about.html", "terms.html", "privacy.html", "contact.html"]) {
+    const html = fs.readFileSync(path.join(DIST, file), "utf8");
+    assert.match(html, /<meta name="robots" content="index, follow" \/>/);
+    assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/${file}"`));
+    assert.match(html, new RegExp(`<meta property="og:url" content="${SITE_URL}/${file}"`));
+    assert.doesNotMatch(html, /localhost|127\.0\.0\.1/);
+  }
+});
