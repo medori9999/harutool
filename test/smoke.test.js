@@ -29,10 +29,10 @@ const toolRoutes = [
 ];
 
 const trustRoutes = [
-  "/about.html",
-  "/terms.html",
-  "/privacy.html",
-  "/contact.html"
+  "/about",
+  "/terms",
+  "/privacy",
+  "/contact"
 ];
 
 let server;
@@ -159,6 +159,17 @@ test("trust pages are reachable and contain a primary heading", async (t) => {
       assert.equal(response.status, 200);
       assert.match(html, /<h1>[^<]+<\/h1>/);
       assert.match(html, /하루툴/);
+      assert.doesNotMatch(html, /href="\/(?:about|terms|privacy|contact)\.html"/);
+    });
+  }
+});
+
+test("legacy trust page .html URLs redirect to clean public URLs", async (t) => {
+  for (const route of trustRoutes) {
+    await t.test(`${route}.html`, async () => {
+      const response = await fetch(`${ORIGIN}${route}.html`, { redirect: "manual" });
+      assert.equal(response.status, 301);
+      assert.equal(response.headers.get("location"), route);
     });
   }
 });

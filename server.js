@@ -13,6 +13,12 @@ const notFoundMeta = {
   title: "페이지를 찾을 수 없습니다 | 하루툴",
   description: "요청한 페이지가 없거나 주소가 변경되었습니다."
 };
+const trustPages = {
+  "/about": "about.html",
+  "/terms": "terms.html",
+  "/privacy": "privacy.html",
+  "/contact": "contact.html"
+};
 
 const tools = {
   "/": {
@@ -258,7 +264,7 @@ function renderHtml(route) {
 
 function sitemap() {
   const baseUrl = (process.env.SITE_URL || "http://localhost:3000").replace(/\/$/, "");
-  const routes = [...Object.keys(tools), "/about.html", "/terms.html", "/privacy.html", "/contact.html"];
+  const routes = [...Object.keys(tools), ...Object.keys(trustPages)];
   const urls = routes
     .map((route) => `<url><loc>${baseUrl}${route}</loc></url>`)
     .join("");
@@ -298,6 +304,20 @@ function createServer() {
     }
     const publisherId = ADSENSE_CLIENT.replace(/^ca-/, "");
     send(res, 200, `google.com, ${publisherId}, DIRECT, f08c47fec0942fa0\n`, mimeTypes[".txt"]);
+    return;
+  }
+
+  if (route.endsWith(".html")) {
+    const cleanRoute = route.replace(/\.html$/, "");
+    if (trustPages[cleanRoute]) {
+      send(res, 301, "", "text/plain; charset=utf-8", { Location: cleanRoute });
+      return;
+    }
+  }
+
+  if (trustPages[route]) {
+    const file = path.join(PUBLIC_DIR, trustPages[route]);
+    send(res, 200, fs.readFileSync(file, "utf8"), mimeTypes[".html"]);
     return;
   }
 

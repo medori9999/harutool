@@ -59,15 +59,21 @@ test("static build contains crawler and trust files", () => {
   const robots = fs.readFileSync(path.join(DIST, "robots.txt"), "utf8");
   const sitemap = fs.readFileSync(path.join(DIST, "sitemap.xml"), "utf8");
   assert.match(robots, new RegExp(`Sitemap: ${SITE_URL}/sitemap\\.xml`));
+  for (const route of ["/about", "/terms", "/privacy", "/contact"]) {
+    assert.match(sitemap, new RegExp(`<loc>${SITE_URL}${route}</loc>`));
+  }
+  assert.doesNotMatch(sitemap, /\/(?:about|terms|privacy|contact)\.html/);
   assert.doesNotMatch(sitemap, /localhost|127\.0\.0\.1/);
 });
 
 test("trust pages expose indexable SEO metadata", () => {
   for (const file of ["about.html", "terms.html", "privacy.html", "contact.html"]) {
+    const route = `/${file.replace(/\.html$/, "")}`;
     const html = fs.readFileSync(path.join(DIST, file), "utf8");
     assert.match(html, /<meta name="robots" content="index, follow" \/>/);
-    assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/${file}"`));
-    assert.match(html, new RegExp(`<meta property="og:url" content="${SITE_URL}/${file}"`));
+    assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}${route}"`));
+    assert.match(html, new RegExp(`<meta property="og:url" content="${SITE_URL}${route}"`));
+    assert.doesNotMatch(html, /href="\/(?:about|terms|privacy|contact)\.html"/);
     assert.doesNotMatch(html, /localhost|127\.0\.0\.1/);
   }
 });

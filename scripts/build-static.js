@@ -49,7 +49,8 @@ function writeFile(relativePath, contents) {
 
 function renderTrustPage(relativePath) {
   const meta = TRUST_PAGES[relativePath];
-  const canonical = `${process.env.SITE_URL}/${relativePath}`;
+  const cleanRoute = `/${relativePath.replace(/\.html$/, "")}`;
+  const canonical = `${process.env.SITE_URL}${cleanRoute}`;
   const html = fs.readFileSync(path.join(PUBLIC_DIR, relativePath), "utf8");
   const searchVerification = [
     process.env.GOOGLE_SITE_VERIFICATION
