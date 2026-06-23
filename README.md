@@ -45,6 +45,7 @@ npm run verify
 - `GOOGLE_SITE_VERIFICATION`: Google Search Console HTML 태그의 `content` 값
 - `NAVER_SITE_VERIFICATION`: 네이버 서치어드바이저 HTML 태그의 `content` 값
 - `CLOUDFLARE_WEB_ANALYTICS_TOKEN`: Cloudflare Web Analytics 토큰. 설정하면 방문자 계측 스크립트가 전체 페이지에 삽입됩니다.
+- `SITEMAP_LASTMOD`: `YYYY-MM-DD` 형식의 사이트맵 갱신일. 비워두면 빌드 날짜가 사용됩니다.
 
 ## Cloudflare Pages 공개 배포
 

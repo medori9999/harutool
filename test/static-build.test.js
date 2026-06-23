@@ -6,6 +6,7 @@ const test = require("node:test");
 const ROOT = path.resolve(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
 const SITE_URL = process.env.SITE_URL || "https://harutool.pages.dev";
+const SITEMAP_LASTMOD = process.env.SITEMAP_LASTMOD || new Date().toISOString().slice(0, 10);
 
 const toolRoutes = [
   "character-counter",
@@ -66,7 +67,11 @@ test("static build contains crawler and trust files", () => {
 
   const robots = fs.readFileSync(path.join(DIST, "robots.txt"), "utf8");
   const sitemap = fs.readFileSync(path.join(DIST, "sitemap.xml"), "utf8");
+  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
   assert.match(robots, new RegExp(`Sitemap: ${SITE_URL}/sitemap\\.xml`));
+  assert.equal(lastmods.length, locations.length);
+  assert.ok(lastmods.every((lastmod) => lastmod === SITEMAP_LASTMOD));
   for (const route of ["/about", "/terms", "/privacy", "/contact"]) {
     assert.match(sitemap, new RegExp(`<loc>${SITE_URL}${route}</loc>`));
   }

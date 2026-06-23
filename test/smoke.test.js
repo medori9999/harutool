@@ -70,7 +70,8 @@ before(async () => {
       SITE_URL,
       GOOGLE_SITE_VERIFICATION: "google-test-token",
       NAVER_SITE_VERIFICATION: "naver-test-token",
-      CLOUDFLARE_WEB_ANALYTICS_TOKEN: "cf-test-token"
+      CLOUDFLARE_WEB_ANALYTICS_TOKEN: "cf-test-token",
+      SITEMAP_LASTMOD: "2026-06-23"
     },
     stdio: ["ignore", "pipe", "pipe"]
   });
@@ -153,10 +154,13 @@ test("sitemap and robots expose the public URL set", async () => {
   const sitemapResponse = await fetch(`${ORIGIN}/sitemap.xml`);
   const sitemap = await sitemapResponse.text();
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
   const expectedRoutes = ["/", ...toolRoutes, ...trustRoutes];
 
   assert.equal(sitemapResponse.status, 200);
   assert.equal(locations.length, expectedRoutes.length);
+  assert.equal(lastmods.length, expectedRoutes.length);
+  assert.ok(lastmods.every((lastmod) => lastmod === "2026-06-23"));
   assert.equal(new Set(locations).size, expectedRoutes.length);
   for (const route of expectedRoutes) assert.ok(locations.includes(`${SITE_URL}${route}`));
   assert.doesNotMatch(sitemap, /localhost|127\.0\.0\.1/);

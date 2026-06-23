@@ -10,6 +10,7 @@ const ADSENSE_SIDE_SLOT = process.env.ADSENSE_SIDE_SLOT || "";
 const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION || "";
 const NAVER_SITE_VERIFICATION = process.env.NAVER_SITE_VERIFICATION || "";
 const CLOUDFLARE_WEB_ANALYTICS_TOKEN = process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN || "";
+const SITEMAP_LASTMOD = process.env.SITEMAP_LASTMOD || new Date().toISOString().slice(0, 10);
 const notFoundMeta = {
   title: "페이지를 찾을 수 없습니다 | 하루툴",
   description: "요청한 페이지가 없거나 주소가 변경되었습니다."
@@ -364,7 +365,7 @@ function sitemap() {
   const baseUrl = (process.env.SITE_URL || "http://localhost:3000").replace(/\/$/, "");
   const routes = [...Object.keys(tools), ...Object.keys(trustPages)];
   const urls = routes
-    .map((route) => `<url><loc>${baseUrl}${route}</loc></url>`)
+    .map((route) => `<url><loc>${baseUrl}${route}</loc><lastmod>${SITEMAP_LASTMOD}</lastmod></url>`)
     .join("");
   return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
 }
