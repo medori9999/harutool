@@ -4,10 +4,11 @@ const path = require("node:path");
 const ROOT = path.resolve(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT, "public");
 const OUTPUT_DIR = path.join(ROOT, "dist");
+const DEFAULT_SITE_URL = "https://harutool.pages.dev";
 
-if (!process.env.SITE_URL && process.env.CF_PAGES_URL) {
-  process.env.SITE_URL = process.env.CF_PAGES_URL;
-}
+// Cloudflare exposes CF_PAGES_URL as a commit-specific preview URL during builds.
+// Search metadata must always use the stable production domain instead.
+process.env.SITE_URL = (process.env.SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, "");
 
 const { renderHtml, sitemap, tools } = require("../server");
 
@@ -39,7 +40,7 @@ for (const route of Object.keys(tools).filter((route) => route !== "/")) {
 writeFile("404.html", renderHtml("/404"));
 writeFile("sitemap.xml", sitemap());
 
-const baseUrl = (process.env.SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+const baseUrl = process.env.SITE_URL;
 writeFile("robots.txt", `User-agent: *\nAllow: /\nSitemap: ${baseUrl}/sitemap.xml\n`);
 
 const adsenseClient = process.env.ADSENSE_CLIENT || "";
