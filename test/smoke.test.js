@@ -71,6 +71,7 @@ before(async () => {
       GOOGLE_SITE_VERIFICATION: "google-test-token",
       NAVER_SITE_VERIFICATION: "naver-test-token",
       CLOUDFLARE_WEB_ANALYTICS_TOKEN: "cf-test-token",
+      ADSENSE_CLIENT: "ca-pub-1234567890123456",
       SITEMAP_LASTMOD: "2026-06-23"
     },
     stdio: ["ignore", "pipe", "pipe"]
@@ -116,6 +117,15 @@ test("home exposes every tool to search crawlers", async () => {
   assert.deepEqual(website.publisher, { "@id": organization["@id"] });
   assert.ok(itemList, "홈 JSON-LD에 ItemList가 있어야 합니다.");
   assert.equal(itemList.itemListElement.length, toolRoutes.length);
+  assert.match(html, /<meta name="google-adsense-account" content="ca-pub-1234567890123456"/);
+});
+
+test("ads.txt exposes the configured AdSense publisher id", async () => {
+  const response = await fetch(`${ORIGIN}/ads.txt`);
+  const body = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.equal(body, "google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0\n");
 });
 
 test("every tool route has indexable server-rendered SEO content", async (t) => {

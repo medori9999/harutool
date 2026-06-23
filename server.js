@@ -4,7 +4,17 @@ const path = require("node:path");
 
 const PORT = Number(process.env.PORT || 3000);
 const PUBLIC_DIR = path.join(__dirname, "public");
-const ADSENSE_CLIENT = process.env.ADSENSE_CLIENT || "";
+
+function normalizeAdsenseClient(value) {
+  const client = value || "";
+  if (!client) return "";
+  if (!/^ca-pub-\d{16}$/.test(client)) {
+    throw new Error("ADSENSE_CLIENT must match ca-pub- followed by 16 digits.");
+  }
+  return client;
+}
+
+const ADSENSE_CLIENT = normalizeAdsenseClient(process.env.ADSENSE_CLIENT);
 const ADSENSE_TOP_SLOT = process.env.ADSENSE_TOP_SLOT || "";
 const ADSENSE_SIDE_SLOT = process.env.ADSENSE_SIDE_SLOT || "";
 const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION || "";

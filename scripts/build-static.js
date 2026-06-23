@@ -6,6 +6,16 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const OUTPUT_DIR = path.join(ROOT, "dist");
 const DEFAULT_SITE_URL = "https://harutool.pages.dev";
 const STATIC_ASSET_CACHE = "public, max-age=31536000, immutable";
+
+function normalizeAdsenseClient(value) {
+  const client = value || "";
+  if (!client) return "";
+  if (!/^ca-pub-\d{16}$/.test(client)) {
+    throw new Error("ADSENSE_CLIENT must match ca-pub- followed by 16 digits.");
+  }
+  return client;
+}
+
 const TRUST_PAGES = {
   "about.html": {
     title: "하루툴 소개",
@@ -139,7 +149,7 @@ writeFile("sitemap.xml", sitemap());
 const baseUrl = process.env.SITE_URL;
 writeFile("robots.txt", `User-agent: *\nAllow: /\nSitemap: ${baseUrl}/sitemap.xml\n`);
 
-const adsenseClient = process.env.ADSENSE_CLIENT || "";
+const adsenseClient = normalizeAdsenseClient(process.env.ADSENSE_CLIENT);
 if (adsenseClient) {
   writeFile("ads.txt", `google.com, ${adsenseClient.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
 }

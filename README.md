@@ -69,7 +69,7 @@ SITE_URL=https://harutool.pages.dev npm run build
 
 AdSense 승인 후 환경 변수에 발급받은 값을 설정합니다.
 
-- `ADSENSE_CLIENT`: `ca-pub-...` 형식의 게시자 클라이언트 ID
+- `ADSENSE_CLIENT`: `ca-pub-` 뒤에 숫자 16자리가 붙는 게시자 클라이언트 ID. 형식이 맞지 않으면 배포 검증에서 실패합니다.
 - `ADSENSE_TOP_SLOT`: 홈 상단 광고 단위 ID
 - `ADSENSE_SIDE_SLOT`: 도구 페이지 측면 광고 단위 ID
 
