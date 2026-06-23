@@ -43,6 +43,7 @@ test("static build contains all search landing pages", () => {
     assert.match(html, /<h1>[^<]+<\/h1>/);
     assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/tools/${route}"`));
     assert.doesNotMatch(html, /\{\{[A-Z_]+\}\}/);
+    assert.doesNotMatch(html, /CLOUDFLARE_WEB_ANALYTICS/);
   }
 });
 
@@ -96,6 +97,7 @@ test("trust pages expose indexable SEO metadata", () => {
     assert.equal(webPage.url, `${SITE_URL}${route}`);
     assert.deepEqual(webPage.publisher, { "@id": organization["@id"] });
     assert.doesNotMatch(html, /href="\/(?:about|terms|privacy|contact)\.html"/);
+    assert.doesNotMatch(html, /CLOUDFLARE_WEB_ANALYTICS/);
     assert.doesNotMatch(html, /localhost|127\.0\.0\.1/);
   }
 });

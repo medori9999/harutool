@@ -44,6 +44,7 @@ npm run verify
 - `SITE_URL`: 실제 도메인. canonical URL, robots.txt, sitemap.xml에 사용됩니다.
 - `GOOGLE_SITE_VERIFICATION`: Google Search Console HTML 태그의 `content` 값
 - `NAVER_SITE_VERIFICATION`: 네이버 서치어드바이저 HTML 태그의 `content` 값
+- `CLOUDFLARE_WEB_ANALYTICS_TOKEN`: Cloudflare Web Analytics 토큰. 설정하면 방문자 계측 스크립트가 전체 페이지에 삽입됩니다.
 
 ## Cloudflare Pages 공개 배포
 
@@ -72,6 +73,17 @@ AdSense 승인 후 환경 변수에 발급받은 값을 설정합니다.
 - `ADSENSE_SIDE_SLOT`: 도구 페이지 측면 광고 단위 ID
 
 광고 스크립트는 방문자가 선택 쿠키에 동의한 뒤에만 불러옵니다. `ADSENSE_CLIENT`를 설정하면 `/ads.txt`도 게시자 ID에 맞춰 생성됩니다.
+
+## 방문자 확인
+
+무료 테스트 단계에서는 Cloudflare Web Analytics를 우선 사용합니다.
+
+1. Cloudflare 대시보드에서 **Analytics & Logs → Web Analytics**로 이동합니다.
+2. 사이트를 추가하고 발급된 Web Analytics 토큰을 복사합니다.
+3. Pages 프로젝트의 환경 변수 `CLOUDFLARE_WEB_ANALYTICS_TOKEN`에 토큰을 저장합니다.
+4. 다시 배포한 뒤 Cloudflare Web Analytics에서 방문 수, 상위 페이지, 유입 경로와 Core Web Vitals를 확인합니다.
+
+Google 검색 유입은 Search Console의 실적 보고서에서 클릭수, 노출수, CTR, 평균 게재순위와 검색어를 확인합니다. 광고 수익은 AdSense 승인 후 AdSense 보고서에서 확인합니다.
 
 ## 출시 전 교체할 내용
 

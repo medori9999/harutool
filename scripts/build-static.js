@@ -71,6 +71,12 @@ function trustPageStructuredData(meta, canonical) {
   }).replaceAll("<", "\\u003c");
 }
 
+function cloudflareWebAnalyticsScript() {
+  if (!process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN) return "";
+  const beacon = JSON.stringify({ token: process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN }).replaceAll("<", "\\u003c");
+  return `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${escapeHtml(beacon)}'></script>`;
+}
+
 function renderTrustPage(relativePath) {
   const meta = TRUST_PAGES[relativePath];
   const cleanRoute = `/${relativePath.replace(/\.html$/, "")}`;
@@ -98,8 +104,11 @@ function renderTrustPage(relativePath) {
     searchVerification
   ].filter(Boolean).join("\n    ");
   const structuredData = `<script type="application/ld+json">\n      ${trustPageStructuredData(meta, canonical)}\n    </script>`;
+  const analytics = cloudflareWebAnalyticsScript();
 
-  return html.replace(/(\s*<link rel="stylesheet")/, `\n    ${seoTags}\n    ${structuredData}$1`);
+  return html
+    .replace(/(\s*<link rel="stylesheet")/, `\n    ${seoTags}\n    ${structuredData}$1`)
+    .replace(/(\s*<script src="\/app\.js|\s*<\/body>)/, analytics ? `\n    ${analytics}$1` : "$1");
 }
 
 function copyPublicAssets() {

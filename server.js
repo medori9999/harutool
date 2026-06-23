@@ -9,6 +9,7 @@ const ADSENSE_TOP_SLOT = process.env.ADSENSE_TOP_SLOT || "";
 const ADSENSE_SIDE_SLOT = process.env.ADSENSE_SIDE_SLOT || "";
 const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION || "";
 const NAVER_SITE_VERIFICATION = process.env.NAVER_SITE_VERIFICATION || "";
+const CLOUDFLARE_WEB_ANALYTICS_TOKEN = process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN || "";
 const notFoundMeta = {
   title: "페이지를 찾을 수 없습니다 | 하루툴",
   description: "요청한 페이지가 없거나 주소가 변경되었습니다."
@@ -147,6 +148,12 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function cloudflareWebAnalyticsScript() {
+  if (!CLOUDFLARE_WEB_ANALYTICS_TOKEN) return "";
+  const beacon = JSON.stringify({ token: CLOUDFLARE_WEB_ANALYTICS_TOKEN }).replaceAll("<", "\\u003c");
+  return `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${escapeHtml(beacon)}'></script>`;
+}
+
 function toolEntries() {
   return Object.entries(tools).filter(([route]) => route !== "/");
 }
@@ -275,6 +282,7 @@ function renderHtml(route) {
       GOOGLE_SITE_VERIFICATION ? `<meta name="google-site-verification" content="${escapeHtml(GOOGLE_SITE_VERIFICATION)}" />` : "",
       NAVER_SITE_VERIFICATION ? `<meta name="naver-site-verification" content="${escapeHtml(NAVER_SITE_VERIFICATION)}" />` : ""
     ].filter(Boolean).join("\n    "))
+    .replace("{{CLOUDFLARE_WEB_ANALYTICS}}", cloudflareWebAnalyticsScript())
     .replace("{{APP_CONFIG}}", JSON.stringify({
       adsenseClient: ADSENSE_CLIENT,
       adSlots: { top: ADSENSE_TOP_SLOT, side: ADSENSE_SIDE_SLOT }

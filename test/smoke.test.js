@@ -69,7 +69,8 @@ before(async () => {
       PORT: String(PORT),
       SITE_URL,
       GOOGLE_SITE_VERIFICATION: "google-test-token",
-      NAVER_SITE_VERIFICATION: "naver-test-token"
+      NAVER_SITE_VERIFICATION: "naver-test-token",
+      CLOUDFLARE_WEB_ANALYTICS_TOKEN: "cf-test-token"
     },
     stdio: ["ignore", "pipe", "pipe"]
   });
@@ -96,6 +97,8 @@ test("home exposes every tool to search crawlers", async () => {
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("x-frame-options"), "DENY");
   assert.equal(response.headers.get("permissions-policy"), "camera=(), geolocation=(), microphone=(), payment=(), usb=()");
+  assert.match(html, /static\.cloudflareinsights\.com\/beacon\.min\.js/);
+  assert.match(html, /data-cf-beacon='[^']*&quot;token&quot;:&quot;cf-test-token&quot;[^']*'/);
   assert.match(html, /<h1>필요할 때 바로 쓰는/);
   assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/"`));
   assert.equal(countMatches(html, /class="tool-card compact-card"/g), toolRoutes.length);
