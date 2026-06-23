@@ -20,6 +20,24 @@ const trustPages = {
   "/privacy": "privacy.html",
   "/contact": "contact.html"
 };
+const trustPageMeta = {
+  "/about": {
+    title: "하루툴 소개",
+    description: "하루툴이 만드는 계산기와 생활 도구의 운영 원칙을 소개합니다."
+  },
+  "/terms": {
+    title: "이용약관 | 하루툴",
+    description: "하루툴 서비스 이용 조건과 계산 결과에 관한 안내입니다."
+  },
+  "/privacy": {
+    title: "개인정보처리방침 | 하루툴",
+    description: "하루툴 개인정보처리방침"
+  },
+  "/contact": {
+    title: "문의 및 오류 제보 | 하루툴",
+    description: "하루툴 계산 오류, 기능 제안과 광고 관련 문의 방법을 안내합니다."
+  }
+};
 
 const tools = {
   "/": {
@@ -152,6 +170,57 @@ function cloudflareWebAnalyticsScript() {
   if (!CLOUDFLARE_WEB_ANALYTICS_TOKEN) return "";
   const beacon = JSON.stringify({ token: CLOUDFLARE_WEB_ANALYTICS_TOKEN }).replaceAll("<", "\\u003c");
   return `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${escapeHtml(beacon)}'></script>`;
+}
+
+function trustPageStructuredData(meta, canonical) {
+  const siteRoot = (process.env.SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteRoot}/#organization`,
+        name: "하루툴",
+        url: `${siteRoot}/`,
+        logo: `${siteRoot}/favicon.svg`
+      },
+      {
+        "@type": "WebPage",
+        name: meta.title,
+        url: canonical,
+        description: meta.description,
+        inLanguage: "ko-KR",
+        publisher: { "@id": `${siteRoot}/#organization` }
+      }
+    ]
+  }).replaceAll("<", "\\u003c");
+}
+
+function renderTrustPage(route) {
+  const meta = trustPageMeta[route];
+  const canonical = `${(process.env.SITE_URL || "http://localhost:3000").replace(/\/$/, "")}${route}`;
+  const html = fs.readFileSync(path.join(PUBLIC_DIR, trustPages[route]), "utf8");
+  const searchVerification = [
+    GOOGLE_SITE_VERIFICATION ? `<meta name="google-site-verification" content="${escapeHtml(GOOGLE_SITE_VERIFICATION)}" />` : "",
+    NAVER_SITE_VERIFICATION ? `<meta name="naver-site-verification" content="${escapeHtml(NAVER_SITE_VERIFICATION)}" />` : "",
+    ADSENSE_CLIENT ? `<meta name="google-adsense-account" content="${escapeHtml(ADSENSE_CLIENT)}" />` : ""
+  ].filter(Boolean).join("\n    ");
+  const seoTags = [
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:title" content="${escapeHtml(meta.title)}" />`,
+    `<meta property="og:description" content="${escapeHtml(meta.description)}" />`,
+    `<meta property="og:url" content="${escapeHtml(canonical)}" />`,
+    `<meta property="og:locale" content="ko_KR" />`,
+    searchVerification,
+    `<script type="application/ld+json">\n      ${trustPageStructuredData(meta, canonical)}\n    </script>`
+  ].filter(Boolean).join("\n    ");
+  const analytics = cloudflareWebAnalyticsScript();
+
+  return html
+    .replace(/(\s*<link rel="stylesheet")/, `\n    ${seoTags}$1`)
+    .replace(/(\s*<\/body>)/, analytics ? `\n    ${analytics}$1` : "$1");
 }
 
 function toolEntries() {
@@ -345,8 +414,7 @@ function createServer() {
   }
 
   if (trustPages[route]) {
-    const file = path.join(PUBLIC_DIR, trustPages[route]);
-    send(res, 200, fs.readFileSync(file, "utf8"), mimeTypes[".html"]);
+    send(res, 200, renderTrustPage(route), mimeTypes[".html"]);
     return;
   }
 

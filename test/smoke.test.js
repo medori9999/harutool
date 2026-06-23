@@ -177,6 +177,16 @@ test("trust pages are reachable and contain a primary heading", async (t) => {
       assert.equal(response.status, 200);
       assert.match(html, /<h1>[^<]+<\/h1>/);
       assert.match(html, /하루툴/);
+      assert.match(html, /<meta name="robots" content="index, follow"/);
+      assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}${route}"`));
+      assert.match(html, new RegExp(`<meta property="og:url" content="${SITE_URL}${route}"`));
+      assert.match(html, /static\.cloudflareinsights\.com\/beacon\.min\.js/);
+      const jsonLd = extractJsonLd(html);
+      const organization = jsonLd["@graph"].find((item) => item["@type"] === "Organization");
+      const webPage = jsonLd["@graph"].find((item) => item["@type"] === "WebPage");
+      assert.equal(organization["@id"], `${SITE_URL}/#organization`);
+      assert.equal(webPage.url, `${SITE_URL}${route}`);
+      assert.deepEqual(webPage.publisher, { "@id": organization["@id"] });
       assert.doesNotMatch(html, /href="\/(?:about|terms|privacy|contact)\.html"/);
     });
   }
