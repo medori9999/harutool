@@ -6,9 +6,11 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "check": "node --check server.js && node --check public/app.js && node --check test/smoke.test.js",
+    "build": "node scripts/build-static.js",
+    "check": "node --check server.js && node --check public/app.js && node --check scripts/build-static.js && node --check test/smoke.test.js && node --check test/static-build.test.js",
     "test": "node --test test/smoke.test.js",
-    "verify": "npm run check && npm test"
+    "test:static": "node --test test/static-build.test.js",
+    "verify": "npm run check && npm test && SITE_URL=https://harutool.pages.dev npm run build && SITE_URL=https://harutool.pages.dev npm run test:static"
   },
   "engines": {
     "node": ">=18"

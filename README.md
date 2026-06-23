@@ -36,7 +36,7 @@ npm start
 npm run verify
 ```
 
-구문 검사와 함께 전체 도구 URL, 검색 메타데이터, canonical, 구조화 데이터, 사이트맵, robots.txt, 404와 신뢰 페이지를 실제 HTTP 요청으로 검사합니다. Render 배포도 이 검증을 통과해야 진행됩니다.
+구문 검사와 함께 전체 도구 URL, 검색 메타데이터, canonical, 구조화 데이터, 사이트맵, robots.txt, 404와 신뢰 페이지를 실제 HTTP 요청으로 검사합니다. Cloudflare Pages용 정적 산출물도 함께 생성하고 검사합니다.
 
 ## 배포 환경 변수
 
@@ -45,15 +45,21 @@ npm run verify
 - `GOOGLE_SITE_VERIFICATION`: Google Search Console HTML 태그의 `content` 값
 - `NAVER_SITE_VERIFICATION`: 네이버 서치어드바이저 HTML 태그의 `content` 값
 
-## Render 공개 배포
+## Cloudflare Pages 공개 배포
 
-1. 이 프로젝트를 GitHub 저장소에 올립니다.
-2. Render에서 **New → Blueprint**를 선택합니다.
-3. GitHub 저장소를 연결하면 `render.yaml`을 읽어 웹 서비스를 만듭니다.
-4. 첫 배포 후 Render가 제공한 `https://...onrender.com` 주소를 `SITE_URL` 환경 변수에 입력합니다.
-5. 다시 배포한 뒤 `/health`, `/robots.txt`, `/sitemap.xml`이 열리는지 확인합니다.
+1. Cloudflare 대시보드에서 **Workers & Pages → Create → Pages → Connect to Git**을 선택합니다.
+2. GitHub의 `medori9999/harutool` 저장소를 연결합니다.
+3. 빌드 명령은 `npm run build`, 출력 디렉터리는 `dist`로 설정합니다.
+4. 환경 변수 `SITE_URL`에는 발급된 `https://...pages.dev` 주소를 입력합니다.
+5. 다시 배포한 뒤 `/robots.txt`, `/sitemap.xml`과 핵심 도구 URL이 열리는지 확인합니다.
 
-도메인을 구입했다면 Render의 Custom Domains에서 연결한 후 `SITE_URL`을 `https://실제도메인`으로 변경합니다.
+Cloudflare Pages의 정적 파일은 비활성 상태에서도 잠들지 않습니다. 도메인을 구입했다면 Custom domains에서 연결한 후 `SITE_URL`을 `https://실제도메인`으로 변경합니다.
+
+로컬에서 배포 산출물만 만들려면:
+
+```bash
+SITE_URL=https://harutool.pages.dev npm run build
+```
 
 ## 광고 적용
 

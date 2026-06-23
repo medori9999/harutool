@@ -265,7 +265,8 @@ function sitemap() {
   return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
 }
 
-const server = http.createServer((req, res) => {
+function createServer() {
+  return http.createServer((req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const route = requestUrl.pathname.replace(/\/+$/, "") || "/";
 
@@ -324,8 +325,18 @@ const server = http.createServer((req, res) => {
     });
     fs.createReadStream(requestedFile).pipe(res);
   });
-});
+  });
+}
 
-server.listen(PORT, () => {
-  console.log(`하루툴이 http://localhost:${PORT} 에서 실행 중입니다.`);
-});
+if (require.main === module) {
+  createServer().listen(PORT, () => {
+    console.log(`하루툴이 http://localhost:${PORT} 에서 실행 중입니다.`);
+  });
+}
+
+module.exports = {
+  createServer,
+  renderHtml,
+  sitemap,
+  tools
+};
