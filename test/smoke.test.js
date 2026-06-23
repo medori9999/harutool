@@ -100,7 +100,14 @@ test("home exposes every tool to search crawlers", async () => {
   for (const route of toolRoutes) assert.match(html, new RegExp(`href="${route}"`));
 
   const jsonLd = extractJsonLd(html);
+  const organization = jsonLd["@graph"].find((item) => item["@type"] === "Organization");
+  const website = jsonLd["@graph"].find((item) => item["@type"] === "WebSite");
   const itemList = jsonLd["@graph"].find((item) => item["@type"] === "ItemList");
+  assert.ok(organization, "홈 JSON-LD에 Organization이 있어야 합니다.");
+  assert.equal(organization["@id"], `${SITE_URL}/#organization`);
+  assert.equal(organization.url, `${SITE_URL}/`);
+  assert.ok(website, "홈 JSON-LD에 WebSite가 있어야 합니다.");
+  assert.deepEqual(website.publisher, { "@id": organization["@id"] });
   assert.ok(itemList, "홈 JSON-LD에 ItemList가 있어야 합니다.");
   assert.equal(itemList.itemListElement.length, toolRoutes.length);
 });
@@ -124,7 +131,13 @@ test("every tool route has indexable server-rendered SEO content", async (t) => 
       assert.doesNotMatch(html, /\{\{[A-Z_]+\}\}/);
 
       const jsonLd = extractJsonLd(html);
+      const organization = jsonLd["@graph"].find((item) => item["@type"] === "Organization");
+      const webApplication = jsonLd["@graph"].find((item) => item["@type"] === "WebApplication");
       const graphTypes = jsonLd["@graph"].map((item) => item["@type"]);
+      assert.ok(organization, "도구 페이지 JSON-LD에 Organization이 있어야 합니다.");
+      assert.equal(organization["@id"], `${SITE_URL}/#organization`);
+      assert.ok(webApplication, "도구 페이지 JSON-LD에 WebApplication이 있어야 합니다.");
+      assert.deepEqual(webApplication.provider, { "@id": organization["@id"] });
       assert.ok(graphTypes.includes("WebApplication"));
       assert.ok(graphTypes.includes("BreadcrumbList"));
     });

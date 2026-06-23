@@ -191,12 +191,29 @@ function renderInitialContent(route, meta) {
 }
 
 function structuredData(route, meta, canonical) {
+  const siteRoot = route === "/" ? canonical.replace(/\/$/, "") : canonical.replace(route, "");
+  const organization = {
+    "@type": "Organization",
+    "@id": `${siteRoot}/#organization`,
+    name: "하루툴",
+    url: `${siteRoot}/`,
+    logo: `${siteRoot}/favicon.svg`
+  };
   let data;
   if (route === "/") {
     data = {
       "@context": "https://schema.org",
       "@graph": [
-        { "@type": "WebSite", name: "하루툴", url: canonical, description: meta.description, inLanguage: "ko-KR" },
+        organization,
+        {
+          "@type": "WebSite",
+          "@id": `${siteRoot}/#website`,
+          name: "하루툴",
+          url: canonical,
+          description: meta.description,
+          inLanguage: "ko-KR",
+          publisher: { "@id": organization["@id"] }
+        },
         {
           "@type": "ItemList",
           name: "하루툴 도구 목록",
@@ -215,6 +232,7 @@ function structuredData(route, meta, canonical) {
     data = {
       "@context": "https://schema.org",
       "@graph": [
+        organization,
         {
           "@type": "WebApplication",
           name: meta.name,
@@ -223,7 +241,8 @@ function structuredData(route, meta, canonical) {
           applicationCategory: "UtilitiesApplication",
           operatingSystem: "Any",
           browserRequirements: "JavaScript",
-          inLanguage: "ko-KR"
+          inLanguage: "ko-KR",
+          provider: { "@id": organization["@id"] }
         },
         {
           "@type": "BreadcrumbList",
