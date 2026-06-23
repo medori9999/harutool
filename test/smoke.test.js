@@ -94,6 +94,8 @@ test("home exposes every tool to search crawlers", async () => {
   const html = await response.text();
 
   assert.equal(response.status, 200);
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
+  assert.equal(response.headers.get("permissions-policy"), "camera=(), geolocation=(), microphone=(), payment=(), usb=()");
   assert.match(html, /<h1>필요할 때 바로 쓰는/);
   assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/"`));
   assert.equal(countMatches(html, /class="tool-card compact-card"/g), toolRoutes.length);

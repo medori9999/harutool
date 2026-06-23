@@ -103,6 +103,11 @@ test("trust pages expose indexable SEO metadata", () => {
 test("Cloudflare headers keep crawler files fresh and cache versioned assets", () => {
   const headers = fs.readFileSync(path.join(DIST, "_headers"), "utf8");
 
+  assert.match(headers, /X-Content-Type-Options: nosniff/);
+  assert.match(headers, /Referrer-Policy: strict-origin-when-cross-origin/);
+  assert.match(headers, /X-Frame-Options: DENY/);
+  assert.match(headers, /Permissions-Policy: camera=\(\), geolocation=\(\), microphone=\(\), payment=\(\), usb=\(\)/);
+
   for (const file of ["/*.html", "/robots.txt", "/sitemap.xml"]) {
     assert.match(headers, new RegExp(`${file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\n\\s+Cache-Control: no-cache`));
   }

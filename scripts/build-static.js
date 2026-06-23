@@ -150,6 +150,8 @@ writeFile("_redirects", [
 writeFile("_headers", `/*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
 
 /*.html
   Cache-Control: no-cache

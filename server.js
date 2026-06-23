@@ -131,6 +131,8 @@ function send(res, status, body, contentType, extraHeaders = {}) {
     "Cache-Control": contentType.includes("text/html") ? "no-cache" : "public, max-age=3600",
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "strict-origin-when-cross-origin",
+    "X-Frame-Options": "DENY",
+    "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=(), usb=()",
     ...extraHeaders
   });
   res.end(body);
