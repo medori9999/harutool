@@ -71,3 +71,18 @@ test("trust pages expose indexable SEO metadata", () => {
     assert.doesNotMatch(html, /localhost|127\.0\.0\.1/);
   }
 });
+
+test("Cloudflare headers keep crawler files fresh and cache versioned assets", () => {
+  const headers = fs.readFileSync(path.join(DIST, "_headers"), "utf8");
+
+  for (const file of ["/*.html", "/robots.txt", "/sitemap.xml"]) {
+    assert.match(headers, new RegExp(`${file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\n\\s+Cache-Control: no-cache`));
+  }
+
+  for (const file of ["/app.js", "/styles.css", "/favicon.svg"]) {
+    assert.match(
+      headers,
+      new RegExp(`${file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\n\\s+Cache-Control: public, max-age=31536000, immutable`)
+    );
+  }
+});

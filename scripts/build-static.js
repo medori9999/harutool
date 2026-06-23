@@ -5,6 +5,7 @@ const ROOT = path.resolve(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT, "public");
 const OUTPUT_DIR = path.join(ROOT, "dist");
 const DEFAULT_SITE_URL = "https://harutool.pages.dev";
+const STATIC_ASSET_CACHE = "public, max-age=31536000, immutable";
 const TRUST_PAGES = {
   "about.html": {
     title: "하루툴 소개",
@@ -115,11 +116,20 @@ writeFile("_headers", `/*
 /*.html
   Cache-Control: no-cache
 
+/robots.txt
+  Cache-Control: no-cache
+
+/sitemap.xml
+  Cache-Control: no-cache
+
 /app.js
-  Cache-Control: public, max-age=3600
+  Cache-Control: ${STATIC_ASSET_CACHE}
 
 /styles.css
-  Cache-Control: public, max-age=3600
+  Cache-Control: ${STATIC_ASSET_CACHE}
+
+/favicon.svg
+  Cache-Control: ${STATIC_ASSET_CACHE}
 `);
 
 console.log(`정적 사이트 생성 완료: ${OUTPUT_DIR}`);
