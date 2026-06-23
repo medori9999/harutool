@@ -110,6 +110,18 @@ if (adsenseClient) {
   writeFile("ads.txt", `google.com, ${adsenseClient.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
 }
 
+writeFile("_redirects", [
+  "/about.html /about 301",
+  "/terms.html /terms 301",
+  "/privacy.html /privacy 301",
+  "/contact.html /contact 301",
+  "/about/ /about 301",
+  "/terms/ /terms 301",
+  "/privacy/ /privacy 301",
+  "/contact/ /contact 301",
+  ""
+].join("\n"));
+
 writeFile("_headers", `/*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

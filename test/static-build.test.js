@@ -45,6 +45,7 @@ test("static build contains crawler and trust files", () => {
     "robots.txt",
     "sitemap.xml",
     "_headers",
+    "_redirects",
     "about.html",
     "terms.html",
     "privacy.html",
@@ -64,6 +65,15 @@ test("static build contains crawler and trust files", () => {
   }
   assert.doesNotMatch(sitemap, /\/(?:about|terms|privacy|contact)\.html/);
   assert.doesNotMatch(sitemap, /localhost|127\.0\.0\.1/);
+});
+
+test("Cloudflare redirects legacy trust URLs to canonical clean URLs", () => {
+  const redirects = fs.readFileSync(path.join(DIST, "_redirects"), "utf8");
+
+  for (const route of ["/about", "/terms", "/privacy", "/contact"]) {
+    assert.match(redirects, new RegExp(`${route}\\.html ${route} 301`));
+    assert.match(redirects, new RegExp(`${route}/ ${route} 301`));
+  }
 });
 
 test("trust pages expose indexable SEO metadata", () => {
