@@ -107,6 +107,10 @@ function expect(condition, message) {
   else fail(message);
 }
 
+function verificationMeta(name, content) {
+  return `<meta name="${name}" content="${content}"`;
+}
+
 expect(fs.existsSync(DIST), "dist 산출물 디렉터리가 있습니다.");
 
 expect(fs.existsSync(ENV_EXAMPLE), ".env.example 파일이 있습니다.");
@@ -157,6 +161,12 @@ for (const file of existingHtmlFiles()) {
   const html = readDist(file);
   expect(!html.includes("{{"), `${file}에 템플릿 자리표시자가 남아 있지 않습니다.`);
   expect(!/localhost|127\.0\.0\.1/.test(html), `${file}에 로컬 주소가 없습니다.`);
+  if (process.env.GOOGLE_SITE_VERIFICATION) {
+    expect(html.includes(verificationMeta("google-site-verification", process.env.GOOGLE_SITE_VERIFICATION)), `${file}에 Google Search Console 인증 메타가 있습니다.`);
+  }
+  if (process.env.NAVER_SITE_VERIFICATION) {
+    expect(html.includes(verificationMeta("naver-site-verification", process.env.NAVER_SITE_VERIFICATION)), `${file}에 네이버 서치어드바이저 인증 메타가 있습니다.`);
+  }
 }
 
 if (fs.existsSync(path.join(DIST, "_headers"))) {
@@ -186,8 +196,7 @@ if (process.env.ADSENSE_CLIENT) {
 }
 
 if (process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN) {
-  const htmlFiles = ["index.html", "privacy.html"].filter((file) => fs.existsSync(path.join(DIST, file)));
-  for (const file of htmlFiles) {
+  for (const file of existingHtmlFiles()) {
     expect(readDist(file).includes("static.cloudflareinsights.com/beacon.min.js"), `${file}에 Cloudflare Web Analytics가 삽입됩니다.`);
   }
 } else {
