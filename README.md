@@ -46,6 +46,14 @@ npm run audit:launch
 
 이 명령은 `dist` 산출물 기준으로 공개 URL, sitemap/robots, canonical, 구조화 데이터, 보안 헤더, 리다이렉트, AdSense와 Cloudflare Web Analytics 준비 상태를 확인합니다.
 
+Cloudflare에 배포된 실제 공개 사이트를 읽기 전용으로 점검하려면:
+
+```bash
+SITE_URL=https://harutool.pages.dev npm run audit:live
+```
+
+이 명령은 공개 홈, robots.txt, sitemap.xml, 주요 URL, 리다이렉트, 보안 헤더, canonical, 구조화 데이터와 ads.txt 상태를 네트워크로 확인합니다.
+
 ## 배포 환경 변수
 
 - `PORT`: 서버 포트
