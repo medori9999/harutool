@@ -39,7 +39,7 @@ const TRUST_PAGES = {
 // Search metadata must always use the stable production domain instead.
 process.env.SITE_URL = (process.env.SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, "");
 
-const { renderHtml, sitemap, tools } = require("../server");
+const { landingPages, renderHtml, sitemap, tools } = require("../server");
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({
@@ -143,6 +143,12 @@ for (const route of toolRoutes) {
   writeFile(`${route.slice(1)}.html`, html);
   writeFile(path.join(route.slice(1), "index.html"), html);
 }
+const landingRoutes = Object.keys(landingPages);
+for (const route of landingRoutes) {
+  const html = renderHtml(route);
+  writeFile(`${route.slice(1)}.html`, html);
+  writeFile(path.join(route.slice(1), "index.html"), html);
+}
 for (const page of Object.keys(TRUST_PAGES)) {
   writeFile(page, renderTrustPage(page));
 }
@@ -162,11 +168,13 @@ writeFile("_redirects", [
   "/terms.html /terms 301",
   "/privacy.html /privacy 301",
   "/contact.html /contact 301",
+  ...landingRoutes.map((route) => `${route}.html ${route} 301`),
   ...toolRoutes.map((route) => `${route}.html ${route} 301`),
   "/about/ /about 301",
   "/terms/ /terms 301",
   "/privacy/ /privacy 301",
   "/contact/ /contact 301",
+  ...landingRoutes.map((route) => `${route}/ ${route} 301`),
   ...toolRoutes.map((route) => `${route}/ ${route} 301`),
   ""
 ].join("\n"));

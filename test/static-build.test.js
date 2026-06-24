@@ -28,6 +28,10 @@ const toolRoutes = [
   "fuel-cost-calculator"
 ];
 
+const landingRoutes = [
+  "business"
+];
+
 function extractJsonLd(html) {
   const match = html.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/);
   assert.ok(match, "JSON-LD 스크립트가 있어야 합니다.");
@@ -37,6 +41,19 @@ function extractJsonLd(html) {
 test("static build contains all search landing pages", () => {
   assert.ok(fs.existsSync(path.join(DIST, "index.html")));
   assert.ok(fs.existsSync(path.join(DIST, "404.html")));
+  for (const route of landingRoutes) {
+    const cleanUrlFile = path.join(DIST, `${route}.html`);
+    const trailingSlashFile = path.join(DIST, route, "index.html");
+    assert.ok(fs.existsSync(cleanUrlFile), `${route} clean URL용 랜딩 페이지가 있어야 합니다.`);
+    assert.ok(fs.existsSync(trailingSlashFile), `${route} trailing slash 호환 랜딩 페이지가 있어야 합니다.`);
+    const html = fs.readFileSync(cleanUrlFile, "utf8");
+    assert.match(html, /사업자 계산기 모음/);
+    assert.match(html, /스마트스토어/);
+    assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/${route}"`));
+    assert.match(html, /"@type":"CollectionPage"/);
+    assert.match(html, /"@type":"FAQPage"/);
+    assert.doesNotMatch(html, /\{\{[A-Z_]+\}\}/);
+  }
   for (const route of toolRoutes) {
     const cleanUrlFile = path.join(DIST, "tools", `${route}.html`);
     const trailingSlashFile = path.join(DIST, "tools", route, "index.html");
@@ -77,6 +94,7 @@ test("static build contains crawler and trust files", () => {
   for (const route of ["/about", "/terms", "/privacy", "/contact"]) {
     assert.match(sitemap, new RegExp(`<loc>${SITE_URL}${route}</loc>`));
   }
+
   assert.doesNotMatch(sitemap, /\/(?:about|terms|privacy|contact)\.html/);
   assert.doesNotMatch(sitemap, /localhost|127\.0\.0\.1/);
 });
@@ -85,6 +103,11 @@ test("Cloudflare redirects legacy trust URLs to canonical clean URLs", () => {
   const redirects = fs.readFileSync(path.join(DIST, "_redirects"), "utf8");
 
   for (const route of ["/about", "/terms", "/privacy", "/contact"]) {
+    assert.match(redirects, new RegExp(`${route}\\.html ${route} 301`));
+    assert.match(redirects, new RegExp(`${route}/ ${route} 301`));
+  }
+
+  for (const route of landingRoutes.map((route) => `/${route}`)) {
     assert.match(redirects, new RegExp(`${route}\\.html ${route} 301`));
     assert.match(redirects, new RegExp(`${route}/ ${route} 301`));
   }

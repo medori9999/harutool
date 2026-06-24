@@ -9,6 +9,7 @@ const requiredRoutes = [
   "/terms",
   "/privacy",
   "/contact",
+  "/business",
   "/tools/character-counter",
   "/tools/percentage-calculator",
   "/tools/discount-calculator",

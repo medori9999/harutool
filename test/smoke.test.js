@@ -35,6 +35,10 @@ const trustRoutes = [
   "/contact"
 ];
 
+const landingRoutes = [
+  "/business"
+];
+
 let server;
 let serverOutput = "";
 
@@ -165,7 +169,7 @@ test("sitemap and robots expose the public URL set", async () => {
   const sitemap = await sitemapResponse.text();
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
-  const expectedRoutes = ["/", ...toolRoutes, ...trustRoutes];
+  const expectedRoutes = ["/", ...landingRoutes, ...toolRoutes, ...trustRoutes];
 
   assert.equal(sitemapResponse.status, 200);
   assert.equal(locations.length, expectedRoutes.length);
@@ -181,6 +185,30 @@ test("sitemap and robots expose the public URL set", async () => {
   assert.match(robots, /User-agent: \*/);
   assert.match(robots, /Allow: \//);
   assert.match(robots, new RegExp(`Sitemap: ${SITE_URL}/sitemap\\.xml`));
+});
+
+test("business landing page targets commercial search intent", async () => {
+  const response = await fetch(`${ORIGIN}/business`);
+  const html = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type"), /text\/html/);
+  assert.match(html, /사업자 계산기 모음/);
+  assert.match(html, /스마트스토어/);
+  assert.match(html, /마진율/);
+  assert.match(html, /부가세/);
+  assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/business"`));
+  assert.match(html, /<meta name="robots" content="index, follow"/);
+  assert.match(html, /"@type":"CollectionPage"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  for (const route of [
+    "/tools/margin-calculator",
+    "/tools/vat-calculator",
+    "/tools/discount-calculator",
+    "/tools/loan-calculator"
+  ]) {
+    assert.match(html, new RegExp(`href="${route}"`));
+  }
 });
 
 test("trust pages are reachable and contain a primary heading", async (t) => {
