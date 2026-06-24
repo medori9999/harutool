@@ -3,6 +3,8 @@ const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
+const PACKAGE_JSON = path.join(ROOT, "package.json");
+const WRANGLER_CONFIG = path.join(ROOT, "wrangler.jsonc");
 const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
 
 const requiredFiles = [
@@ -57,6 +59,10 @@ function readDist(relativePath) {
   return fs.readFileSync(path.join(DIST, relativePath), "utf8");
 }
 
+function readJson(relativePath) {
+  return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), "utf8"));
+}
+
 function existingHtmlFiles() {
   const files = [];
   const walk = (directory) => {
@@ -80,6 +86,18 @@ function expect(condition, message) {
 }
 
 expect(fs.existsSync(DIST), "dist 산출물 디렉터리가 있습니다.");
+
+if (fs.existsSync(PACKAGE_JSON)) {
+  const pkg = readJson("package.json");
+  expect(pkg.scripts?.build === "npm run build:static && npm run test:static", "package.json의 build 명령이 정적 빌드와 테스트를 실행합니다.");
+  expect(pkg.scripts?.verify?.includes("npm run audit:launch"), "package.json의 verify 명령이 출시 감사를 포함합니다.");
+}
+
+if (fs.existsSync(WRANGLER_CONFIG)) {
+  const wrangler = readJson("wrangler.jsonc");
+  expect(wrangler.name === "harutool", "wrangler.jsonc의 Pages 프로젝트 이름이 harutool입니다.");
+  expect(wrangler.pages_build_output_dir === "./dist", "wrangler.jsonc의 Pages 출력 디렉터리가 ./dist입니다.");
+}
 
 for (const file of requiredFiles) {
   expect(fs.existsSync(path.join(DIST, file)), `${file} 파일이 있습니다.`);
