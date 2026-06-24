@@ -97,6 +97,11 @@ async function main() {
   expect(privacy.body.includes(`<link rel="canonical" href="${SITE_URL}/privacy"`), "/privacy canonical이 SITE_URL과 일치합니다.");
   expect(privacy.body.includes('"@type":"WebPage"'), "/privacy 구조화 데이터에 WebPage가 있습니다.");
 
+  const missing = await request("/missing-page-for-audit");
+  expect(missing.statusCode === 404, "없는 공개 URL이 404로 응답합니다.");
+  expect(missing.body.includes('<meta name="robots" content="noindex, follow"'), "없는 공개 URL이 noindex로 설정되어 있습니다.");
+  expect(missing.body.includes('<span class="error-code">404</span>'), "없는 공개 URL에 404 안내가 있습니다.");
+
   const ads = await request("/ads.txt");
   if (process.env.ADSENSE_CLIENT) {
     expect(ads.statusCode === 200, "AdSense 설정 시 공개 ads.txt가 200으로 응답합니다.");
