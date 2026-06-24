@@ -137,8 +137,11 @@ fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 copyPublicAssets();
 
 writeFile("index.html", renderHtml("/"));
-for (const route of Object.keys(tools).filter((route) => route !== "/")) {
-  writeFile(path.join(route.slice(1), "index.html"), renderHtml(route));
+const toolRoutes = Object.keys(tools).filter((route) => route !== "/");
+for (const route of toolRoutes) {
+  const html = renderHtml(route);
+  writeFile(`${route.slice(1)}.html`, html);
+  writeFile(path.join(route.slice(1), "index.html"), html);
 }
 for (const page of Object.keys(TRUST_PAGES)) {
   writeFile(page, renderTrustPage(page));
@@ -159,10 +162,12 @@ writeFile("_redirects", [
   "/terms.html /terms 301",
   "/privacy.html /privacy 301",
   "/contact.html /contact 301",
+  ...toolRoutes.map((route) => `${route}.html ${route} 301`),
   "/about/ /about 301",
   "/terms/ /terms 301",
   "/privacy/ /privacy 301",
   "/contact/ /contact 301",
+  ...toolRoutes.map((route) => `${route}/ ${route} 301`),
   ""
 ].join("\n"));
 

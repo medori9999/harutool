@@ -185,8 +185,9 @@ if (fs.existsSync(path.join(DIST, "_headers"))) {
 
 if (fs.existsSync(path.join(DIST, "_redirects"))) {
   const redirects = readDist("_redirects");
-  for (const route of ["/about", "/terms", "/privacy", "/contact"]) {
+  for (const route of requiredPublicRoutes.filter((route) => route !== "/")) {
     expect(redirects.includes(`${route}.html ${route} 301`), `${route}.html 리다이렉트가 있습니다.`);
+    expect(redirects.includes(`${route}/ ${route} 301`), `${route}/ 리다이렉트가 있습니다.`);
   }
 }
 

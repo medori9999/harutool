@@ -38,9 +38,11 @@ test("static build contains all search landing pages", () => {
   assert.ok(fs.existsSync(path.join(DIST, "index.html")));
   assert.ok(fs.existsSync(path.join(DIST, "404.html")));
   for (const route of toolRoutes) {
-    const file = path.join(DIST, "tools", route, "index.html");
-    assert.ok(fs.existsSync(file), `${route} 정적 페이지가 있어야 합니다.`);
-    const html = fs.readFileSync(file, "utf8");
+    const cleanUrlFile = path.join(DIST, "tools", `${route}.html`);
+    const trailingSlashFile = path.join(DIST, "tools", route, "index.html");
+    assert.ok(fs.existsSync(cleanUrlFile), `${route} clean URL용 정적 페이지가 있어야 합니다.`);
+    assert.ok(fs.existsSync(trailingSlashFile), `${route} trailing slash 호환 정적 페이지가 있어야 합니다.`);
+    const html = fs.readFileSync(cleanUrlFile, "utf8");
     assert.match(html, /<h1>[^<]+<\/h1>/);
     assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/tools/${route}"`));
     assert.doesNotMatch(html, /\{\{[A-Z_]+\}\}/);
@@ -83,6 +85,11 @@ test("Cloudflare redirects legacy trust URLs to canonical clean URLs", () => {
   const redirects = fs.readFileSync(path.join(DIST, "_redirects"), "utf8");
 
   for (const route of ["/about", "/terms", "/privacy", "/contact"]) {
+    assert.match(redirects, new RegExp(`${route}\\.html ${route} 301`));
+    assert.match(redirects, new RegExp(`${route}/ ${route} 301`));
+  }
+
+  for (const route of toolRoutes.map((route) => `/tools/${route}`)) {
     assert.match(redirects, new RegExp(`${route}\\.html ${route} 301`));
     assert.match(redirects, new RegExp(`${route}/ ${route} 301`));
   }

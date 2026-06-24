@@ -74,6 +74,19 @@ function expectImmutableAsset(response, pathname, expectedType) {
   expect(contentType.includes(expectedType), `${pathname} Content-Type이 ${expectedType}입니다.`);
 }
 
+function expectIndexableRoute(response, route) {
+  const contentType = response.headers["content-type"] || "";
+
+  expect(response.statusCode === 200, `${route} 공개 URL이 200으로 응답합니다.`);
+  expect(contentType.includes("text/html"), `${route}가 HTML로 응답합니다.`);
+  expect(response.body.includes(`<link rel="canonical" href="${SITE_URL}${route === "/" ? "/" : route}"`), `${route} canonical이 공개 URL과 일치합니다.`);
+  expect(response.body.includes('<meta name="robots" content="index, follow"'), `${route}가 index, follow로 설정되어 있습니다.`);
+  expect(/<meta name="description" content="[^"]+"/.test(response.body), `${route}에 검색 설명 메타가 있습니다.`);
+  expect(/<h1(?:\s[^>]*)?>[\s\S]*?<\/h1>/.test(response.body), `${route}에 대표 제목 h1이 있습니다.`);
+  expect(!response.body.includes("{{"), `${route}에 템플릿 자리표시자가 없습니다.`);
+  expect(!/localhost|127\.0\.0\.1/.test(response.body), `${route}에 로컬 주소가 없습니다.`);
+}
+
 async function main() {
   const home = await request("/");
   expect(home.statusCode === 200, "홈이 200으로 응답합니다.");
@@ -106,6 +119,11 @@ async function main() {
   expect(!/localhost|127\.0\.0\.1/.test(sitemap.body), "공개 sitemap에 로컬 주소가 없습니다.");
   for (const route of requiredRoutes) {
     expect(locations.includes(`${SITE_URL}${route}`), `공개 sitemap에 ${route}가 있습니다.`);
+  }
+
+  for (const route of requiredRoutes) {
+    const page = route === "/" ? home : await request(route);
+    expectIndexableRoute(page, route);
   }
 
   const legacyAbout = await request("/about.html", { method: "HEAD" });
