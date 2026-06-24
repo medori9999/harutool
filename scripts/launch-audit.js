@@ -6,6 +6,7 @@ const DIST = path.join(ROOT, "dist");
 const ENV_EXAMPLE = path.join(ROOT, ".env.example");
 const PACKAGE_JSON = path.join(ROOT, "package.json");
 const WRANGLER_CONFIG = path.join(ROOT, "wrangler.jsonc");
+const OPERATIONS_DOC = path.join(ROOT, "docs", "operations.md");
 const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
 
 const requiredFiles = [
@@ -117,6 +118,16 @@ expect(fs.existsSync(ENV_EXAMPLE), ".env.example 파일이 있습니다.");
 const envKeys = envExampleKeys();
 for (const key of requiredEnvKeys) {
   expect(envKeys.includes(key), `.env.example에 ${key}가 있습니다.`);
+}
+
+expect(fs.existsSync(OPERATIONS_DOC), "운영·측정 체크리스트 문서가 있습니다.");
+if (fs.existsSync(OPERATIONS_DOC)) {
+  const operationsDoc = fs.readFileSync(OPERATIONS_DOC, "utf8");
+  expect(operationsDoc.includes("Cloudflare Web Analytics"), "운영 문서에 방문자 확인 위치가 있습니다.");
+  expect(operationsDoc.includes("Google Search Console"), "운영 문서에 검색 유입 확인 위치가 있습니다.");
+  expect(operationsDoc.includes("네이버 서치어드바이저"), "운영 문서에 네이버 수집 확인 위치가 있습니다.");
+  expect(operationsDoc.includes("Google AdSense"), "운영 문서에 광고 수익 확인 위치가 있습니다.");
+  expect(operationsDoc.includes("audit:live"), "운영 문서에 공개 배포 점검 명령이 있습니다.");
 }
 
 if (fs.existsSync(PACKAGE_JSON)) {

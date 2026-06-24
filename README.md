@@ -102,6 +102,8 @@ AdSense 승인 후 환경 변수에 발급받은 값을 설정합니다.
 
 Google 검색 유입은 Search Console의 실적 보고서에서 클릭수, 노출수, CTR, 평균 게재순위와 검색어를 확인합니다. 광고 수익은 AdSense 승인 후 AdSense 보고서에서 확인합니다.
 
+운영 중 매주 확인할 대시보드와 수익 집계 전제 조건은 [운영·측정 체크리스트](docs/operations.md)를 기준으로 점검합니다.
+
 ## 출시 전 교체할 내용
 
 - `hello@harutool.kr` 문의 주소
