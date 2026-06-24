@@ -57,6 +57,23 @@ function readDist(relativePath) {
   return fs.readFileSync(path.join(DIST, relativePath), "utf8");
 }
 
+function existingHtmlFiles() {
+  const files = [];
+  const walk = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const absolutePath = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        walk(absolutePath);
+        continue;
+      }
+      if (entry.name.endsWith(".html")) files.push(path.relative(DIST, absolutePath));
+    }
+  };
+
+  if (fs.existsSync(DIST)) walk(DIST);
+  return files.sort();
+}
+
 function expect(condition, message) {
   if (condition) pass(message);
   else fail(message);
@@ -88,7 +105,12 @@ if (fs.existsSync(path.join(DIST, "index.html"))) {
   expect(index.includes(`<link rel="canonical" href="${SITE_URL}/"`), "홈 canonical이 공개 URL입니다.");
   expect(index.includes('"@type":"Organization"'), "홈 구조화 데이터에 Organization이 있습니다.");
   expect(index.includes('"@type":"ItemList"'), "홈 구조화 데이터에 도구 목록이 있습니다.");
-  expect(!index.includes("{{"), "홈 HTML에 템플릿 자리표시자가 남아 있지 않습니다.");
+}
+
+for (const file of existingHtmlFiles()) {
+  const html = readDist(file);
+  expect(!html.includes("{{"), `${file}에 템플릿 자리표시자가 남아 있지 않습니다.`);
+  expect(!/localhost|127\.0\.0\.1/.test(html), `${file}에 로컬 주소가 없습니다.`);
 }
 
 if (fs.existsSync(path.join(DIST, "_headers"))) {
@@ -109,8 +131,12 @@ if (fs.existsSync(path.join(DIST, "_redirects"))) {
 if (process.env.ADSENSE_CLIENT) {
   expect(/^ca-pub-\d{16}$/.test(process.env.ADSENSE_CLIENT), "ADSENSE_CLIENT 형식이 올바릅니다.");
   expect(fs.existsSync(path.join(DIST, "ads.txt")), "AdSense 설정 시 ads.txt가 생성됩니다.");
+  if (fs.existsSync(path.join(DIST, "ads.txt"))) {
+    expect(readDist("ads.txt") === `google.com, ${process.env.ADSENSE_CLIENT.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`, "ads.txt 게시자 ID가 ADSENSE_CLIENT와 일치합니다.");
+  }
 } else {
   pass("AdSense 미설정 상태입니다. 승인 전이면 정상입니다.");
+  expect(!fs.existsSync(path.join(DIST, "ads.txt")), "AdSense 미설정 상태에서는 ads.txt가 생성되지 않습니다.");
 }
 
 if (process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN) {
@@ -120,6 +146,9 @@ if (process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN) {
   }
 } else {
   pass("Cloudflare Web Analytics 토큰 미설정 상태입니다. 토큰 추가 전이면 정상입니다.");
+  for (const file of existingHtmlFiles()) {
+    expect(!readDist(file).includes("static.cloudflareinsights.com/beacon.min.js"), `${file}에 Analytics 스크립트가 잘못 삽입되지 않았습니다.`);
+  }
 }
 
 for (const check of checks) {
