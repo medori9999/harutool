@@ -29,7 +29,8 @@ const toolRoutes = [
 ];
 
 const landingRoutes = [
-  "business"
+  "business",
+  "finance"
 ];
 
 function extractJsonLd(html) {
@@ -47,8 +48,8 @@ test("static build contains all search landing pages", () => {
     assert.ok(fs.existsSync(cleanUrlFile), `${route} clean URL용 랜딩 페이지가 있어야 합니다.`);
     assert.ok(fs.existsSync(trailingSlashFile), `${route} trailing slash 호환 랜딩 페이지가 있어야 합니다.`);
     const html = fs.readFileSync(cleanUrlFile, "utf8");
-    assert.match(html, /사업자 계산기 모음/);
-    assert.match(html, /스마트스토어/);
+    assert.match(html, route === "business" ? /사업자 계산기 모음/ : /이자 계산기 모음/);
+    assert.match(html, route === "business" ? /스마트스토어/ : /복리/);
     assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/${route}"`));
     assert.match(html, /"@type":"CollectionPage"/);
     assert.match(html, /"@type":"FAQPage"/);

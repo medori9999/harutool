@@ -36,7 +36,8 @@ const trustRoutes = [
 ];
 
 const landingRoutes = [
-  "/business"
+  "/business",
+  "/finance"
 ];
 
 let server;
@@ -206,6 +207,30 @@ test("business landing page targets commercial search intent", async () => {
     "/tools/vat-calculator",
     "/tools/discount-calculator",
     "/tools/loan-calculator"
+  ]) {
+    assert.match(html, new RegExp(`href="${route}"`));
+  }
+});
+
+test("finance landing page targets interest search intent", async () => {
+  const response = await fetch(`${ORIGIN}/finance`);
+  const html = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type"), /text\/html/);
+  assert.match(html, /이자 계산기 모음/);
+  assert.match(html, /대출/);
+  assert.match(html, /복리/);
+  assert.match(html, /퍼센트/);
+  assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/finance"`));
+  assert.match(html, /<meta name="robots" content="index, follow"/);
+  assert.match(html, /"@type":"CollectionPage"/);
+  assert.match(html, /"@type":"FAQPage"/);
+  for (const route of [
+    "/tools/loan-calculator",
+    "/tools/compound-interest-calculator",
+    "/tools/percentage-calculator",
+    "/tools/average-calculator"
   ]) {
     assert.match(html, new RegExp(`href="${route}"`));
   }

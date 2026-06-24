@@ -68,6 +68,33 @@ const landingPages = {
       ["마진율과 부가세 계산을 따로 해야 하나요?", "부가세 포함 가격으로 판매한다면 공급가액과 부가세를 먼저 나누고, 실제 비용과 수수료를 반영해 순이익 기준 마진율을 다시 확인하는 것이 좋습니다."],
       ["광고비도 마진 계산에 넣어야 하나요?", "실제 수익성을 보려면 광고비, 결제 수수료, 반품 비용처럼 반복적으로 발생하는 비용을 기타 비용에 포함하는 것이 좋습니다."]
     ]
+  },
+  "/finance": {
+    name: "이자 계산기 모음",
+    title: "이자 계산기 모음 - 대출·복리·퍼센트 계산 | 하루툴",
+    description: "대출 월 상환금, 총이자, 복리 투자 수익, 퍼센트 증감률과 평균값을 한곳에서 비교해 보는 금융 계산기 모음입니다.",
+    eyebrow: "대출·복리·퍼센트 계산",
+    introTitle: "이자와 수익률은 같이 비교해야 합니다",
+    intro: "대출은 월 납입금과 총이자를 확인해야 하고, 투자는 수익률과 기간에 따른 복리 효과를 함께 봐야 합니다. 금액을 결정하기 전 여러 계산기를 연결해서 현금흐름과 기대 수익을 같이 비교해 보세요.",
+    tools: [
+      "/tools/loan-calculator",
+      "/tools/compound-interest-calculator",
+      "/tools/percentage-calculator",
+      "/tools/average-calculator",
+      "/tools/discount-calculator",
+      "/tools/time-calculator"
+    ],
+    faqs: [
+      ["대출 이자는 무엇을 먼저 봐야 하나요?", "월 상환금만 보지 말고 전체 기간 동안 내는 총이자와 원금 대비 이자 비율을 함께 확인하는 것이 좋습니다."],
+      ["복리 계산 결과를 그대로 믿어도 되나요?", "복리 계산은 고정 수익률을 가정한 예상치입니다. 실제 투자 수익률, 세금, 수수료와 손실 가능성은 별도로 고려해야 합니다."],
+      ["퍼센트 계산은 금융 판단에 왜 필요한가요?", "금리 차이, 수익률 변화, 할인율, 증감률을 같은 기준으로 비교해야 대출과 투자 조건을 더 정확히 이해할 수 있습니다."]
+    ],
+    steps: [
+      ["월 상환금 확인", "대출 이자 계산기로 매달 빠져나갈 금액과 총이자를 먼저 봅니다."],
+      ["수익률 비교", "복리 계산기로 같은 금액을 투자했을 때의 장기 결과를 가정해 봅니다."],
+      ["증감률 계산", "퍼센트 계산기로 금리·수익률·가격 변화 폭을 비교합니다."],
+      ["평균값 점검", "평균 계산기로 여러 기간의 수익률이나 지출 값을 정리합니다."]
+    ]
   }
 };
 
@@ -315,10 +342,10 @@ function renderInitialContent(route, meta) {
       </details>`).join("");
     return `<div class="tool-page landing-page initial-content">
       <div class="breadcrumbs"><a href="/">홈</a> &nbsp;/&nbsp; ${escapeHtml(landing.name)}</div>
-      <header class="tool-header"><p class="eyebrow">스마트스토어·자영업·프리랜서 계산</p><h1>${escapeHtml(landing.name)}</h1><p>${escapeHtml(landing.description)}</p></header>
+      <header class="tool-header"><p class="eyebrow">${escapeHtml(landing.eyebrow || "스마트스토어·자영업·프리랜서 계산")}</p><h1>${escapeHtml(landing.name)}</h1><p>${escapeHtml(landing.description)}</p></header>
       <section class="info-section landing-intro">
-        <h2>판매 전 숫자부터 확인하세요</h2>
-        <p>가격을 먼저 정하고 나중에 비용을 빼면 실제 순이익이 예상보다 작아질 수 있습니다. 마진율, 부가세, 할인, 평균 비용과 대출 이자를 함께 확인하면 광고비를 쓰기 전 손익 기준을 더 분명하게 잡을 수 있습니다.</p>
+        <h2>${escapeHtml(landing.introTitle || "판매 전 숫자부터 확인하세요")}</h2>
+        <p>${escapeHtml(landing.intro || "가격을 먼저 정하고 나중에 비용을 빼면 실제 순이익이 예상보다 작아질 수 있습니다. 마진율, 부가세, 할인, 평균 비용과 대출 이자를 함께 확인하면 광고비를 쓰기 전 손익 기준을 더 분명하게 잡을 수 있습니다.")}</p>
       </section>
       <section>
         <div class="section-head"><div><h2>사업자에게 먼저 필요한 계산기</h2><p>판매가와 비용 판단에 바로 쓰는 도구입니다.</p></div></div>

@@ -29,6 +29,7 @@ const requiredPublicRoutes = [
   "/privacy",
   "/contact",
   "/business",
+  "/finance",
   "/tools/character-counter",
   "/tools/percentage-calculator",
   "/tools/discount-calculator",

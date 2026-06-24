@@ -24,6 +24,64 @@ const numberFormat = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 }
 const preciseNumberFormat = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 8 });
 const wonFormat = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 0 });
 const appConfig = window.HARUTOOL_CONFIG || { adsenseClient: "", adSlots: {} };
+const landingList = [
+  {
+    path: "/business",
+    badge: "수익화 추천",
+    title: "사업자 계산기 모음",
+    description: "스마트스토어, 온라인 판매, 프리랜서와 자영업자가 판매가, 마진율, 부가세, 할인과 비용을 빠르게 계산할 수 있습니다.",
+    eyebrow: "스마트스토어·자영업·프리랜서 계산",
+    introTitle: "판매 전 숫자부터 확인하세요",
+    intro: "가격을 먼저 정하고 나중에 비용을 빼면 실제 순이익이 예상보다 작아질 수 있습니다. 마진율, 부가세, 할인, 평균 비용과 대출 이자를 함께 확인하면 광고비를 쓰기 전 손익 기준을 더 분명하게 잡을 수 있습니다.",
+    tools: [
+      "/tools/margin-calculator",
+      "/tools/vat-calculator",
+      "/tools/discount-calculator",
+      "/tools/average-calculator",
+      "/tools/loan-calculator",
+      "/tools/fuel-cost-calculator"
+    ],
+    steps: [
+      ["원가와 수수료 확인", "마진율 계산기로 순이익과 손익분기 판매가를 먼저 봅니다."],
+      ["부가세 포함 여부 확인", "부가세 계산기로 공급가액과 합계금액을 나눕니다."],
+      ["할인 가능 범위 확인", "할인 계산기로 프로모션 후에도 이익이 남는지 비교합니다."],
+      ["고정비와 이동비 반영", "대출 이자, 유류비, 평균 비용을 함께 넣어 실제 운영비를 가늠합니다."]
+    ],
+    faqs: [
+      ["판매가를 정할 때 무엇부터 계산해야 하나요?", "상품 원가, 플랫폼 수수료, 포장비, 배송비, 광고비를 먼저 더한 뒤 원하는 순이익을 남길 수 있는 판매가를 계산하는 편이 안전합니다."],
+      ["마진율과 부가세 계산을 따로 해야 하나요?", "부가세 포함 가격으로 판매한다면 공급가액과 부가세를 먼저 나누고, 실제 비용과 수수료를 반영해 순이익 기준 마진율을 다시 확인하는 것이 좋습니다."],
+      ["광고비도 마진 계산에 넣어야 하나요?", "실제 수익성을 보려면 광고비, 결제 수수료, 반품 비용처럼 반복적으로 발생하는 비용을 기타 비용에 포함하는 것이 좋습니다."]
+    ]
+  },
+  {
+    path: "/finance",
+    badge: "금융 검색",
+    title: "이자 계산기 모음",
+    description: "대출 월 상환금, 총이자, 복리 투자 수익, 퍼센트 증감률과 평균값을 한곳에서 비교해 볼 수 있습니다.",
+    eyebrow: "대출·복리·퍼센트 계산",
+    introTitle: "이자와 수익률은 같이 비교해야 합니다",
+    intro: "대출은 월 납입금과 총이자를 확인해야 하고, 투자는 수익률과 기간에 따른 복리 효과를 함께 봐야 합니다. 금액을 결정하기 전 여러 계산기를 연결해서 현금흐름과 기대 수익을 같이 비교해 보세요.",
+    tools: [
+      "/tools/loan-calculator",
+      "/tools/compound-interest-calculator",
+      "/tools/percentage-calculator",
+      "/tools/average-calculator",
+      "/tools/discount-calculator",
+      "/tools/time-calculator"
+    ],
+    steps: [
+      ["월 상환금 확인", "대출 이자 계산기로 매달 빠져나갈 금액과 총이자를 먼저 봅니다."],
+      ["수익률 비교", "복리 계산기로 같은 금액을 투자했을 때의 장기 결과를 가정해 봅니다."],
+      ["증감률 계산", "퍼센트 계산기로 금리·수익률·가격 변화 폭을 비교합니다."],
+      ["평균값 점검", "평균 계산기로 여러 기간의 수익률이나 지출 값을 정리합니다."]
+    ],
+    faqs: [
+      ["대출 이자는 무엇을 먼저 봐야 하나요?", "월 상환금만 보지 말고 전체 기간 동안 내는 총이자와 원금 대비 이자 비율을 함께 확인하는 것이 좋습니다."],
+      ["복리 계산 결과를 그대로 믿어도 되나요?", "복리 계산은 고정 수익률을 가정한 예상치입니다. 실제 투자 수익률, 세금, 수수료와 손실 가능성은 별도로 고려해야 합니다."],
+      ["퍼센트 계산은 금융 판단에 왜 필요한가요?", "금리 차이, 수익률 변화, 할인율, 증감률을 같은 기준으로 비교해야 대출과 투자 조건을 더 정확히 이해할 수 있습니다."]
+    ]
+  }
+];
 
 function toast(message) {
   const element = document.querySelector("#toast");
@@ -79,11 +137,12 @@ function renderHome() {
           <div><h2>목적별 계산 모음</h2><p>검색 의도에 맞춰 묶은 실전 계산 페이지입니다.</p></div>
         </div>
         <div class="landing-grid">
-          <a class="landing-card" href="/business">
-            <span class="eyebrow">수익화 추천</span>
-            <h3>사업자 계산기 모음</h3>
-            <p>스마트스토어, 온라인 판매, 프리랜서와 자영업자가 판매가, 마진율, 부가세, 할인과 비용을 빠르게 계산할 수 있습니다.</p>
-          </a>
+          ${landingList.map((landing) => `
+            <a class="landing-card" href="${landing.path}">
+              <span class="eyebrow">${landing.badge}</span>
+              <h3>${landing.title}</h3>
+              <p>${landing.description}</p>
+            </a>`).join("")}
         </div>
       </section>
       <section id="all-tools">
@@ -144,51 +203,36 @@ function renderHome() {
   });
 }
 
-function renderBusinessLanding() {
-  const businessTools = [
-    "/tools/margin-calculator",
-    "/tools/vat-calculator",
-    "/tools/discount-calculator",
-    "/tools/average-calculator",
-    "/tools/loan-calculator",
-    "/tools/fuel-cost-calculator"
-  ].map((path) => toolList.find((tool) => tool.path === path)).filter(Boolean);
-  const faqs = [
-    ["판매가를 정할 때 무엇부터 계산해야 하나요?", "상품 원가, 플랫폼 수수료, 포장비, 배송비, 광고비를 먼저 더한 뒤 원하는 순이익을 남길 수 있는 판매가를 계산하는 편이 안전합니다."],
-    ["마진율과 부가세 계산을 따로 해야 하나요?", "부가세 포함 가격으로 판매한다면 공급가액과 부가세를 먼저 나누고, 실제 비용과 수수료를 반영해 순이익 기준 마진율을 다시 확인하는 것이 좋습니다."],
-    ["광고비도 마진 계산에 넣어야 하나요?", "실제 수익성을 보려면 광고비, 결제 수수료, 반품 비용처럼 반복적으로 발생하는 비용을 기타 비용에 포함하는 것이 좋습니다."]
-  ];
+function renderLandingPage(landing) {
+  const landingTools = landing.tools.map((path) => toolList.find((tool) => tool.path === path)).filter(Boolean);
   app.innerHTML = `
     <div class="tool-page landing-page">
-      <div class="breadcrumbs"><a href="/">홈</a> &nbsp;/&nbsp; 사업자 계산기 모음</div>
+      <div class="breadcrumbs"><a href="/">홈</a> &nbsp;/&nbsp; ${landing.title}</div>
       <header class="tool-header">
-        <p class="eyebrow">스마트스토어·자영업·프리랜서 계산</p>
-        <h1>사업자 계산기 모음</h1>
-        <p>스마트스토어, 온라인 판매, 프리랜서와 자영업자가 판매가, 마진율, 부가세, 할인, 대출 이자와 이동 비용을 빠르게 계산할 수 있는 실전 계산기 모음입니다.</p>
+        <p class="eyebrow">${landing.eyebrow}</p>
+        <h1>${landing.title}</h1>
+        <p>${landing.description}</p>
       </header>
       ${adSlot("", "top")}
       <section class="info-section landing-intro">
-        <h2>판매 전 숫자부터 확인하세요</h2>
-        <p>가격을 먼저 정하고 나중에 비용을 빼면 실제 순이익이 예상보다 작아질 수 있습니다. 마진율, 부가세, 할인, 평균 비용과 대출 이자를 함께 확인하면 광고비를 쓰기 전 손익 기준을 더 분명하게 잡을 수 있습니다.</p>
+        <h2>${landing.introTitle}</h2>
+        <p>${landing.intro}</p>
       </section>
       <section>
         <div class="section-head">
-          <div><h2>사업자에게 먼저 필요한 계산기</h2><p>판매가와 비용 판단에 바로 쓰는 도구입니다.</p></div>
+          <div><h2>먼저 확인할 계산기</h2><p>판단에 바로 쓰는 도구를 순서대로 모았습니다.</p></div>
         </div>
-        <div class="tool-grid">${toolCards(businessTools, true)}</div>
+        <div class="tool-grid">${toolCards(landingTools, true)}</div>
       </section>
       <section class="info-section">
         <h2>계산 순서 추천</h2>
         <ol class="step-list">
-          <li><strong>원가와 수수료 확인</strong><span>마진율 계산기로 순이익과 손익분기 판매가를 먼저 봅니다.</span></li>
-          <li><strong>부가세 포함 여부 확인</strong><span>부가세 계산기로 공급가액과 합계금액을 나눕니다.</span></li>
-          <li><strong>할인 가능 범위 확인</strong><span>할인 계산기로 프로모션 후에도 이익이 남는지 비교합니다.</span></li>
-          <li><strong>고정비와 이동비 반영</strong><span>대출 이자, 유류비, 평균 비용을 함께 넣어 실제 운영비를 가늠합니다.</span></li>
+          ${landing.steps.map(([title, description]) => `<li><strong>${title}</strong><span>${description}</span></li>`).join("")}
         </ol>
       </section>
-      ${faqSection(faqs)}
+      ${faqSection(landing.faqs)}
     </div>`;
-  setFaqSchema(faqs);
+  setFaqSchema(landing.faqs);
 }
 
 function pageShell(title, description, body, info) {
@@ -1074,7 +1118,8 @@ function renderFuelCostCalculator() {
 
 const renderers = {
   "/": renderHome,
-  "/business": renderBusinessLanding,
+  "/business": () => renderLandingPage(landingList.find((landing) => landing.path === "/business")),
+  "/finance": () => renderLandingPage(landingList.find((landing) => landing.path === "/finance")),
   "/tools/character-counter": renderCharacterCounter,
   "/tools/percentage-calculator": renderPercentageCalculator,
   "/tools/discount-calculator": renderDiscountCalculator,
