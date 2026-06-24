@@ -3,6 +3,7 @@ const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "..");
 const DIST = path.join(ROOT, "dist");
+const ENV_EXAMPLE = path.join(ROOT, ".env.example");
 const PACKAGE_JSON = path.join(ROOT, "package.json");
 const WRANGLER_CONFIG = path.join(ROOT, "wrangler.jsonc");
 const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
@@ -45,6 +46,18 @@ const requiredPublicRoutes = [
   "/tools/fuel-cost-calculator"
 ];
 
+const requiredEnvKeys = [
+  "PORT",
+  "SITE_URL",
+  "GOOGLE_SITE_VERIFICATION",
+  "NAVER_SITE_VERIFICATION",
+  "CLOUDFLARE_WEB_ANALYTICS_TOKEN",
+  "SITEMAP_LASTMOD",
+  "ADSENSE_CLIENT",
+  "ADSENSE_TOP_SLOT",
+  "ADSENSE_SIDE_SLOT"
+];
+
 const checks = [];
 
 function pass(message) {
@@ -61,6 +74,15 @@ function readDist(relativePath) {
 
 function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), "utf8"));
+}
+
+function envExampleKeys() {
+  if (!fs.existsSync(ENV_EXAMPLE)) return [];
+  return fs.readFileSync(ENV_EXAMPLE, "utf8")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"))
+    .map((line) => line.split("=")[0]);
 }
 
 function existingHtmlFiles() {
@@ -86,6 +108,12 @@ function expect(condition, message) {
 }
 
 expect(fs.existsSync(DIST), "dist 산출물 디렉터리가 있습니다.");
+
+expect(fs.existsSync(ENV_EXAMPLE), ".env.example 파일이 있습니다.");
+const envKeys = envExampleKeys();
+for (const key of requiredEnvKeys) {
+  expect(envKeys.includes(key), `.env.example에 ${key}가 있습니다.`);
+}
 
 if (fs.existsSync(PACKAGE_JSON)) {
   const pkg = readJson("package.json");
