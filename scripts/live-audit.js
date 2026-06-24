@@ -63,6 +63,17 @@ function expect(condition, message) {
   else fail(message);
 }
 
+function expectImmutableAsset(response, pathname, expectedType) {
+  const cacheControl = response.headers["cache-control"] || "";
+  const contentType = response.headers["content-type"] || "";
+
+  expect(response.statusCode === 200, `${pathname} 정적 자산이 200으로 응답합니다.`);
+  expect(cacheControl.includes("public"), `${pathname}에 public 캐시 정책이 있습니다.`);
+  expect(cacheControl.includes("max-age=31536000"), `${pathname}에 1년 max-age 캐시가 있습니다.`);
+  expect(cacheControl.includes("immutable"), `${pathname}에 immutable 캐시가 있습니다.`);
+  expect(contentType.includes(expectedType), `${pathname} Content-Type이 ${expectedType}입니다.`);
+}
+
 async function main() {
   const home = await request("/");
   expect(home.statusCode === 200, "홈이 200으로 응답합니다.");
@@ -73,6 +84,15 @@ async function main() {
   expect(home.body.includes('"@type":"Organization"'), "공개 홈 구조화 데이터에 Organization이 있습니다.");
   expect(!home.body.includes("{{"), "공개 홈에 템플릿 자리표시자가 없습니다.");
   expect(!/localhost|127\.0\.0\.1/.test(home.body), "공개 홈에 로컬 주소가 없습니다.");
+
+  const appScript = await request("/app.js?v=12", { method: "HEAD" });
+  expectImmutableAsset(appScript, "/app.js", "javascript");
+
+  const stylesheet = await request("/styles.css?v=7", { method: "HEAD" });
+  expectImmutableAsset(stylesheet, "/styles.css", "text/css");
+
+  const favicon = await request("/favicon.svg", { method: "HEAD" });
+  expectImmutableAsset(favicon, "/favicon.svg", "image/svg+xml");
 
   const robots = await request("/robots.txt");
   expect(robots.statusCode === 200, "robots.txt가 200으로 응답합니다.");
