@@ -61,6 +61,17 @@ const requiredEnvKeys = [
   "ADSENSE_SIDE_SLOT"
 ];
 
+const landingExpectations = {
+  "business.html": {
+    keywords: ["사업자 계산기 모음", "스마트스토어", "마진율", "부가세"],
+    toolLinks: ["/tools/margin-calculator", "/tools/vat-calculator", "/tools/discount-calculator"]
+  },
+  "finance.html": {
+    keywords: ["이자 계산기 모음", "대출", "복리", "퍼센트"],
+    toolLinks: ["/tools/loan-calculator", "/tools/compound-interest-calculator", "/tools/percentage-calculator"]
+  }
+};
+
 const checks = [];
 
 function pass(message) {
@@ -174,6 +185,22 @@ if (fs.existsSync(path.join(DIST, "404.html"))) {
   const notFound = readDist("404.html");
   expect(notFound.includes('<meta name="robots" content="noindex, follow"'), "404.html이 noindex로 설정되어 있습니다.");
   expect(notFound.includes('<span class="error-code">404</span>'), "404.html에 404 안내가 있습니다.");
+}
+
+for (const [file, expectation] of Object.entries(landingExpectations)) {
+  if (!fs.existsSync(path.join(DIST, file))) {
+    fail(`${file} 랜딩 페이지가 없습니다.`);
+    continue;
+  }
+  const html = readDist(file);
+  expect(html.includes('"@type":"CollectionPage"'), `${file}에 CollectionPage 구조화 데이터가 있습니다.`);
+  expect(html.includes('"@type":"FAQPage"'), `${file}에 FAQPage 구조화 데이터가 있습니다.`);
+  for (const keyword of expectation.keywords) {
+    expect(html.includes(keyword), `${file}에 ${keyword} 문구가 있습니다.`);
+  }
+  for (const toolLink of expectation.toolLinks) {
+    expect(html.includes(`href="${toolLink}"`), `${file}에서 ${toolLink}로 연결됩니다.`);
+  }
 }
 
 for (const file of existingHtmlFiles()) {

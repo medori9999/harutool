@@ -30,6 +30,17 @@ const requiredRoutes = [
   "/tools/fuel-cost-calculator"
 ];
 
+const landingExpectations = {
+  "/business": {
+    keywords: ["사업자 계산기 모음", "스마트스토어", "마진율", "부가세"],
+    toolLinks: ["/tools/margin-calculator", "/tools/vat-calculator", "/tools/discount-calculator"]
+  },
+  "/finance": {
+    keywords: ["이자 계산기 모음", "대출", "복리", "퍼센트"],
+    toolLinks: ["/tools/loan-calculator", "/tools/compound-interest-calculator", "/tools/percentage-calculator"]
+  }
+};
+
 const checks = [];
 
 function pass(message) {
@@ -89,6 +100,20 @@ function expectIndexableRoute(response, route) {
   expect(!/localhost|127\.0\.0\.1/.test(response.body), `${route}에 로컬 주소가 없습니다.`);
 }
 
+function expectLandingPage(response, route) {
+  const expectation = landingExpectations[route];
+  if (!expectation) return;
+
+  expect(response.body.includes('"@type":"CollectionPage"'), `${route}에 CollectionPage 구조화 데이터가 있습니다.`);
+  expect(response.body.includes('"@type":"FAQPage"'), `${route}에 FAQPage 구조화 데이터가 있습니다.`);
+  for (const keyword of expectation.keywords) {
+    expect(response.body.includes(keyword), `${route}에 ${keyword} 문구가 있습니다.`);
+  }
+  for (const toolLink of expectation.toolLinks) {
+    expect(response.body.includes(`href="${toolLink}"`), `${route}에서 ${toolLink}로 연결됩니다.`);
+  }
+}
+
 async function main() {
   const home = await request("/");
   expect(home.statusCode === 200, "홈이 200으로 응답합니다.");
@@ -126,6 +151,7 @@ async function main() {
   for (const route of requiredRoutes) {
     const page = route === "/" ? home : await request(route);
     expectIndexableRoute(page, route);
+    expectLandingPage(page, route);
   }
 
   const legacyAbout = await request("/about.html", { method: "HEAD" });
