@@ -2,6 +2,7 @@ const https = require("node:https");
 const http = require("node:http");
 
 const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
+const CLOUDFLARE_WEB_ANALYTICS_TOKEN = process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN || "";
 
 const requiredRoutes = [
   "/",
@@ -114,6 +115,17 @@ function expectLandingPage(response, route) {
   }
 }
 
+function expectAnalyticsState(response, route) {
+  const hasBeacon = response.body.includes("static.cloudflareinsights.com/beacon.min.js");
+
+  if (CLOUDFLARE_WEB_ANALYTICS_TOKEN) {
+    expect(hasBeacon, `${route}에 Cloudflare Web Analytics 스크립트가 있습니다.`);
+    expect(response.body.includes(CLOUDFLARE_WEB_ANALYTICS_TOKEN), `${route}에 Cloudflare Web Analytics 토큰이 있습니다.`);
+  } else {
+    expect(!hasBeacon, `${route}에 Analytics 스크립트가 잘못 삽입되지 않았습니다.`);
+  }
+}
+
 async function main() {
   const home = await request("/");
   expect(home.statusCode === 200, "홈이 200으로 응답합니다.");
@@ -152,6 +164,7 @@ async function main() {
     const page = route === "/" ? home : await request(route);
     expectIndexableRoute(page, route);
     expectLandingPage(page, route);
+    expectAnalyticsState(page, route);
   }
 
   const legacyAbout = await request("/about.html", { method: "HEAD" });
