@@ -125,6 +125,19 @@ function verificationMeta(name, content) {
   return `<meta name="${name}" content="${content}"`;
 }
 
+function expectAdConsentGate(html, appJs) {
+  expect(html.includes('id="consent-banner"'), "홈에 쿠키 동의 배너가 있습니다.");
+  expect(html.includes('id="consent-essential"'), "홈에 필수만 허용 버튼이 있습니다.");
+  expect(html.includes('id="consent-accept"'), "홈에 선택 쿠키 동의 버튼이 있습니다.");
+  expect(html.includes('id="cookie-settings"'), "홈에 쿠키 설정 재열기 버튼이 있습니다.");
+  expect(appJs.includes('localStorage.getItem("harutool-consent")'), "앱이 쿠키 동의 선택을 확인합니다.");
+  expect(appJs.includes('if (!saved) banner.hidden = false;'), "동의 기록이 없으면 배너를 표시합니다.");
+  expect(appJs.includes('if (saved === "accepted") loadAds();'), "저장된 선택 동의가 있을 때만 광고를 로드합니다.");
+  expect(appJs.includes('if (value === "accepted") loadAds();'), "새 선택 동의가 있을 때만 광고를 로드합니다.");
+  expect(appJs.includes('setConsent("essential")'), "필수만 허용 선택이 광고 로드와 분리되어 있습니다.");
+  expect(appJs.includes("pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"), "AdSense 스크립트 로드 위치가 동의 게이트 내부에 있습니다.");
+}
+
 expect(fs.existsSync(DIST), "dist 산출물 디렉터리가 있습니다.");
 
 expect(fs.existsSync(ENV_EXAMPLE), ".env.example 파일이 있습니다.");
@@ -179,6 +192,9 @@ if (fs.existsSync(path.join(DIST, "index.html"))) {
   expect(index.includes(`<link rel="canonical" href="${SITE_URL}/"`), "홈 canonical이 공개 URL입니다.");
   expect(index.includes('"@type":"Organization"'), "홈 구조화 데이터에 Organization이 있습니다.");
   expect(index.includes('"@type":"ItemList"'), "홈 구조화 데이터에 도구 목록이 있습니다.");
+  if (fs.existsSync(path.join(DIST, "app.js"))) {
+    expectAdConsentGate(index, readDist("app.js"));
+  }
 }
 
 if (fs.existsSync(path.join(DIST, "404.html"))) {

@@ -143,6 +143,19 @@ function expectSearchVerificationState(response, route) {
   }
 }
 
+function expectAdConsentGate(home, appJs) {
+  expect(home.body.includes('id="consent-banner"'), "공개 홈에 쿠키 동의 배너가 있습니다.");
+  expect(home.body.includes('id="consent-essential"'), "공개 홈에 필수만 허용 버튼이 있습니다.");
+  expect(home.body.includes('id="consent-accept"'), "공개 홈에 선택 쿠키 동의 버튼이 있습니다.");
+  expect(home.body.includes('id="cookie-settings"'), "공개 홈에 쿠키 설정 재열기 버튼이 있습니다.");
+  expect(appJs.body.includes('localStorage.getItem("harutool-consent")'), "공개 앱이 쿠키 동의 선택을 확인합니다.");
+  expect(appJs.body.includes('if (!saved) banner.hidden = false;'), "공개 앱은 동의 기록이 없으면 배너를 표시합니다.");
+  expect(appJs.body.includes('if (saved === "accepted") loadAds();'), "공개 앱은 저장된 선택 동의가 있을 때만 광고를 로드합니다.");
+  expect(appJs.body.includes('if (value === "accepted") loadAds();'), "공개 앱은 새 선택 동의가 있을 때만 광고를 로드합니다.");
+  expect(appJs.body.includes('setConsent("essential")'), "공개 앱의 필수만 허용 선택은 광고 로드와 분리되어 있습니다.");
+  expect(appJs.body.includes("pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"), "공개 앱에 AdSense 스크립트 로드 위치가 있습니다.");
+}
+
 async function main() {
   const home = await request("/");
   expect(home.statusCode === 200, "홈이 200으로 응답합니다.");
@@ -156,6 +169,9 @@ async function main() {
 
   const appScript = await request("/app.js?v=12", { method: "HEAD" });
   expectImmutableAsset(appScript, "/app.js", "javascript");
+  const appSource = await request("/app.js?v=12");
+  expect(appSource.statusCode === 200, "/app.js 소스가 200으로 응답합니다.");
+  expectAdConsentGate(home, appSource);
 
   const stylesheet = await request("/styles.css?v=7", { method: "HEAD" });
   expectImmutableAsset(stylesheet, "/styles.css", "text/css");

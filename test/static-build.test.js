@@ -157,3 +157,22 @@ test("Cloudflare headers keep crawler files fresh and cache versioned assets", (
     );
   }
 });
+
+test("ad scripts are gated by explicit optional cookie consent", () => {
+  const html = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
+  const appJs = fs.readFileSync(path.join(DIST, "app.js"), "utf8");
+
+  assert.match(html, /id="consent-banner"/);
+  assert.match(html, /id="consent-essential"/);
+  assert.match(html, /id="consent-accept"/);
+  assert.match(html, /id="cookie-settings"/);
+  assert.match(html, /필수만 허용/);
+  assert.match(html, /선택 쿠키 동의/);
+
+  assert.match(appJs, /localStorage\.getItem\("harutool-consent"\)/);
+  assert.match(appJs, /if \(!saved\) banner\.hidden = false;/);
+  assert.match(appJs, /if \(saved === "accepted"\) loadAds\(\);/);
+  assert.match(appJs, /if \(value === "accepted"\) loadAds\(\);/);
+  assert.match(appJs, /setConsent\("essential"\)/);
+  assert.match(appJs, /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/);
+});
