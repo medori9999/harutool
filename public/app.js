@@ -54,6 +54,87 @@ const landingList = [
     ]
   },
   {
+    path: "/business/smartstore-margin",
+    badge: "판매자 검색",
+    title: "스마트스토어 마진 계산",
+    description: "스마트스토어 판매자가 원가, 결제 수수료, 배송·포장비와 광고비를 반영해 판매가별 순이익과 마진율을 확인할 수 있습니다.",
+    eyebrow: "스마트스토어 판매가·마진 계산",
+    introTitle: "스마트스토어 판매가는 수수료와 운영비까지 넣어 봐야 합니다",
+    intro: "상품 원가만 보고 판매가를 정하면 네이버페이 결제 수수료, 배송 보조, 포장비, 광고비를 뺀 실제 순이익이 작아질 수 있습니다. 먼저 마진율 계산기로 판매가별 순이익을 보고, 부가세와 할인 가능 범위를 이어서 확인해 보세요.",
+    tools: [
+      "/tools/margin-calculator",
+      "/tools/vat-calculator",
+      "/tools/discount-calculator",
+      "/tools/average-calculator",
+      "/tools/fuel-cost-calculator"
+    ],
+    steps: [
+      ["판매가와 원가 입력", "마진율 계산기에 판매가, 상품 원가, 판매 수수료와 포장·배송 보조 비용을 넣습니다."],
+      ["광고비 반영", "클릭 광고나 체험단 비용처럼 반복되는 비용은 기타 비용에 넣어 순이익을 보수적으로 확인합니다."],
+      ["부가세 포함 가격 점검", "부가세 계산기로 공급가액과 VAT를 나눠 실제 매출 기준을 확인합니다."],
+      ["할인 가능 범위 확인", "할인 계산기로 쿠폰 적용 후에도 손익분기 판매가 아래로 내려가지 않는지 봅니다."]
+    ],
+    faqs: [
+      ["스마트스토어 마진율은 어떤 비용까지 넣어야 하나요?", "상품 원가, 결제 수수료, 포장비, 배송 보조금, 광고비, 반품 예상 비용처럼 반복적으로 발생하는 비용을 함께 넣는 것이 좋습니다."],
+      ["판매 수수료는 몇 퍼센트로 넣어야 하나요?", "카테고리와 결제 방식에 따라 달라질 수 있으므로 실제 정산 화면이나 네이버 판매자센터 안내를 확인하고 평균 수수료를 입력하세요."],
+      ["쿠폰 할인은 어디에 반영하나요?", "할인 후 판매가를 마진율 계산기에 다시 넣거나, 할인 계산기로 최종 판매가를 먼저 구한 뒤 순이익을 비교하면 됩니다."]
+    ]
+  },
+  {
+    path: "/business/coupang-margin",
+    badge: "판매자 검색",
+    title: "쿠팡 판매가 마진 계산",
+    description: "쿠팡 판매자가 판매 수수료, 배송비, 원가, 포장비와 광고비를 반영해 판매가별 손익분기점과 마진율을 계산할 수 있습니다.",
+    eyebrow: "쿠팡 판매자 손익 계산",
+    introTitle: "쿠팡 판매가는 수수료와 배송 조건을 같이 봐야 합니다",
+    intro: "쿠팡은 카테고리 수수료, 배송 정책, 광고비, 반품 가능성을 함께 고려해야 실제 이익이 보입니다. 판매가를 정하기 전 손익분기 판매가와 할인 가능 범위를 먼저 계산해 두면 무리한 가격 경쟁을 피할 수 있습니다.",
+    tools: [
+      "/tools/margin-calculator",
+      "/tools/discount-calculator",
+      "/tools/vat-calculator",
+      "/tools/average-calculator",
+      "/tools/loan-calculator"
+    ],
+    steps: [
+      ["카테고리 수수료 입력", "마진율 계산기의 판매 수수료에 쿠팡 카테고리별 수수료 또는 평균 정산 수수료를 입력합니다."],
+      ["배송·포장비 포함", "판매자가 부담하는 배송비, 포장재, 사은품 비용은 기타 비용에 넣어 계산합니다."],
+      ["손익분기 판매가 확인", "계산 결과의 손익분기 판매가를 기준으로 최저 판매가와 쿠폰 한도를 정합니다."],
+      ["할인 후 이익 재확인", "할인 계산기로 쿠폰·프로모션 후 최종 판매가를 구하고 다시 마진율을 비교합니다."]
+    ],
+    faqs: [
+      ["쿠팡 마진 계산에서 가장 많이 빠뜨리는 비용은 무엇인가요?", "배송비, 포장비, 광고비, 반품 비용, 카드·플랫폼 수수료처럼 상품 원가 밖의 비용이 자주 빠집니다."],
+      ["로켓그로스나 판매 방식에 따라 계산이 달라지나요?", "네, 물류·배송·보관 비용 구조가 달라질 수 있으므로 실제 정산 기준에 맞춰 기타 비용과 수수료를 조정해야 합니다."],
+      ["가격을 낮추면 무조건 판매량이 늘까요?", "가격 경쟁은 전환율을 높일 수 있지만, 손익분기점 아래로 내려가면 판매량이 늘어도 손실이 커질 수 있습니다."]
+    ]
+  },
+  {
+    path: "/business/vat-price",
+    badge: "사업자 검색",
+    title: "부가세 포함 가격 계산",
+    description: "부가세 포함 금액에서 공급가액과 VAT를 나누거나, 공급가액에 부가세를 더해 합계금액을 계산할 수 있습니다.",
+    eyebrow: "공급가액·부가세·합계금액 계산",
+    introTitle: "부가세 포함 가격인지 별도 가격인지 먼저 나눠야 합니다",
+    intro: "거래처 견적, 온라인 판매가, 세금계산서 금액은 부가세 포함 여부에 따라 실제 매출과 세액이 달라집니다. 합계금액에서 공급가액을 나누고, 판매 마진 계산에는 어떤 금액을 기준으로 볼지 함께 확인하세요.",
+    tools: [
+      "/tools/vat-calculator",
+      "/tools/margin-calculator",
+      "/tools/discount-calculator",
+      "/tools/percentage-calculator",
+      "/tools/average-calculator"
+    ],
+    steps: [
+      ["포함·별도 선택", "부가세 계산기에서 공급가액 기준인지 합계금액 기준인지 먼저 선택합니다."],
+      ["공급가액과 VAT 분리", "부가세 포함 금액이라면 합계금액을 입력해 공급가액과 세액을 나눕니다."],
+      ["마진 기준 확인", "마진율 계산기에는 실제 비용과 비교할 기준 금액을 맞춰 넣어 순이익을 확인합니다."],
+      ["할인 후 금액 재계산", "할인이 들어간 경우 최종 결제 금액 기준으로 부가세와 마진을 다시 계산합니다."]
+    ],
+    faqs: [
+      ["부가세 포함 금액에서 공급가액은 어떻게 구하나요?", "일반적인 10% 부가세 기준에서는 합계금액을 1.1로 나누면 공급가액, 합계금액에서 공급가액을 빼면 부가세가 됩니다."],
+      ["마진 계산에는 부가세 포함 금액을 넣어야 하나요?", "비용과 매출을 같은 기준으로 비교해야 합니다. 세금 처리를 제외한 수익성을 보려면 공급가액 기준으로 맞춰 계산하는 편이 안전합니다."],
+      ["면세나 영세율도 같은 방식인가요?", "아닙니다. 면세·영세율·간이과세 등은 조건이 다를 수 있으므로 세무 기준을 별도로 확인해야 합니다."]
+    ]
+  },
+  {
     path: "/finance",
     badge: "금융 검색",
     title: "이자 계산기 모음",
@@ -1119,6 +1200,9 @@ function renderFuelCostCalculator() {
 const renderers = {
   "/": renderHome,
   "/business": () => renderLandingPage(landingList.find((landing) => landing.path === "/business")),
+  "/business/smartstore-margin": () => renderLandingPage(landingList.find((landing) => landing.path === "/business/smartstore-margin")),
+  "/business/coupang-margin": () => renderLandingPage(landingList.find((landing) => landing.path === "/business/coupang-margin")),
+  "/business/vat-price": () => renderLandingPage(landingList.find((landing) => landing.path === "/business/vat-price")),
   "/finance": () => renderLandingPage(landingList.find((landing) => landing.path === "/finance")),
   "/tools/character-counter": renderCharacterCounter,
   "/tools/percentage-calculator": renderPercentageCalculator,

@@ -30,8 +30,19 @@ const toolRoutes = [
 
 const landingRoutes = [
   "business",
+  "business/smartstore-margin",
+  "business/coupang-margin",
+  "business/vat-price",
   "finance"
 ];
+
+const landingExpectedKeywords = {
+  "business": ["사업자 계산기 모음", "스마트스토어"],
+  "business/smartstore-margin": ["스마트스토어 마진 계산", "네이버페이"],
+  "business/coupang-margin": ["쿠팡 판매가 마진 계산", "손익분기"],
+  "business/vat-price": ["부가세 포함 가격 계산", "공급가액"],
+  "finance": ["이자 계산기 모음", "복리"]
+};
 
 function extractJsonLd(html) {
   const match = html.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/);
@@ -48,8 +59,9 @@ test("static build contains all search landing pages", () => {
     assert.ok(fs.existsSync(cleanUrlFile), `${route} clean URL용 랜딩 페이지가 있어야 합니다.`);
     assert.ok(fs.existsSync(trailingSlashFile), `${route} trailing slash 호환 랜딩 페이지가 있어야 합니다.`);
     const html = fs.readFileSync(cleanUrlFile, "utf8");
-    assert.match(html, route === "business" ? /사업자 계산기 모음/ : /이자 계산기 모음/);
-    assert.match(html, route === "business" ? /스마트스토어/ : /복리/);
+    for (const keyword of landingExpectedKeywords[route]) {
+      assert.match(html, new RegExp(keyword));
+    }
     assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}/${route}"`));
     assert.match(html, /"@type":"CollectionPage"/);
     assert.match(html, /"@type":"FAQPage"/);
@@ -92,7 +104,7 @@ test("static build contains crawler and trust files", () => {
   assert.match(robots, new RegExp(`Sitemap: ${SITE_URL}/sitemap\\.xml`));
   assert.equal(lastmods.length, locations.length);
   assert.ok(lastmods.every((lastmod) => lastmod === SITEMAP_LASTMOD));
-  for (const route of ["/about", "/terms", "/privacy", "/contact"]) {
+  for (const route of ["/about", "/terms", "/privacy", "/contact", ...landingRoutes.map((route) => `/${route}`)]) {
     assert.match(sitemap, new RegExp(`<loc>${SITE_URL}${route}</loc>`));
   }
 

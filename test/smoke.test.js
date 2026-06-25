@@ -37,6 +37,9 @@ const trustRoutes = [
 
 const landingRoutes = [
   "/business",
+  "/business/smartstore-margin",
+  "/business/coupang-margin",
+  "/business/vat-price",
   "/finance"
 ];
 
@@ -209,6 +212,30 @@ test("business landing page targets commercial search intent", async () => {
     "/tools/loan-calculator"
   ]) {
     assert.match(html, new RegExp(`href="${route}"`));
+  }
+});
+
+test("seller intent landing pages target narrower search queries", async (t) => {
+  const cases = [
+    ["/business/smartstore-margin", ["스마트스토어 마진 계산", "네이버페이", "광고비"], ["/tools/margin-calculator", "/tools/vat-calculator", "/tools/discount-calculator"]],
+    ["/business/coupang-margin", ["쿠팡 판매가 마진 계산", "배송비", "손익분기"], ["/tools/margin-calculator", "/tools/discount-calculator", "/tools/vat-calculator"]],
+    ["/business/vat-price", ["부가세 포함 가격 계산", "공급가액", "합계금액"], ["/tools/vat-calculator", "/tools/margin-calculator", "/tools/discount-calculator"]]
+  ];
+
+  for (const [route, keywords, links] of cases) {
+    await t.test(route, async () => {
+      const response = await fetch(`${ORIGIN}${route}`);
+      const html = await response.text();
+
+      assert.equal(response.status, 200);
+      assert.match(response.headers.get("content-type"), /text\/html/);
+      assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}${route}"`));
+      assert.match(html, /<meta name="robots" content="index, follow"/);
+      assert.match(html, /"@type":"CollectionPage"/);
+      assert.match(html, /"@type":"FAQPage"/);
+      for (const keyword of keywords) assert.match(html, new RegExp(keyword));
+      for (const link of links) assert.match(html, new RegExp(`href="${link}"`));
+    });
   }
 });
 
