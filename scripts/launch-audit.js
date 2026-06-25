@@ -8,6 +8,7 @@ const PACKAGE_JSON = path.join(ROOT, "package.json");
 const WRANGLER_CONFIG = path.join(ROOT, "wrangler.jsonc");
 const OPERATIONS_DOC = path.join(ROOT, "docs", "operations.md");
 const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
+const { publicRoutes } = require("../server");
 
 const requiredFiles = [
   "index.html",
@@ -22,35 +23,7 @@ const requiredFiles = [
   "contact.html"
 ];
 
-const requiredPublicRoutes = [
-  "/",
-  "/about",
-  "/terms",
-  "/privacy",
-  "/contact",
-  "/business",
-  "/business/smartstore-margin",
-  "/business/coupang-margin",
-  "/business/vat-price",
-  "/finance",
-  "/tools/character-counter",
-  "/tools/percentage-calculator",
-  "/tools/discount-calculator",
-  "/tools/dday-calculator",
-  "/tools/random-picker",
-  "/tools/password-generator",
-  "/tools/text-cleaner",
-  "/tools/pyeong-calculator",
-  "/tools/age-calculator",
-  "/tools/unit-converter",
-  "/tools/loan-calculator",
-  "/tools/compound-interest-calculator",
-  "/tools/time-calculator",
-  "/tools/average-calculator",
-  "/tools/vat-calculator",
-  "/tools/margin-calculator",
-  "/tools/fuel-cost-calculator"
-];
+const requiredPublicRoutes = publicRoutes();
 
 const requiredEnvKeys = [
   "PORT",

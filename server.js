@@ -600,9 +600,13 @@ function renderHtml(route) {
     .replace("{{INITIAL_CONTENT}}", renderInitialContent(route, meta));
 }
 
+function publicRoutes() {
+  return [...Object.keys(tools), ...Object.keys(landingPages), ...Object.keys(trustPages)];
+}
+
 function sitemap() {
   const baseUrl = (process.env.SITE_URL || "http://localhost:3000").replace(/\/$/, "");
-  const routes = [...Object.keys(tools), ...Object.keys(landingPages), ...Object.keys(trustPages)];
+  const routes = publicRoutes();
   const urls = routes
     .map((route) => `<url><loc>${baseUrl}${route}</loc><lastmod>${SITEMAP_LASTMOD}</lastmod></url>`)
     .join("");
@@ -695,6 +699,7 @@ module.exports = {
   createServer,
   renderHtml,
   sitemap,
+  publicRoutes,
   landingPages,
   tools
 };

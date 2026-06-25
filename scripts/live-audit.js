@@ -5,36 +5,9 @@ const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(
 const CLOUDFLARE_WEB_ANALYTICS_TOKEN = process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN || "";
 const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION || "";
 const NAVER_SITE_VERIFICATION = process.env.NAVER_SITE_VERIFICATION || "";
+const { publicRoutes } = require("../server");
 
-const requiredRoutes = [
-  "/",
-  "/about",
-  "/terms",
-  "/privacy",
-  "/contact",
-  "/business",
-  "/business/smartstore-margin",
-  "/business/coupang-margin",
-  "/business/vat-price",
-  "/finance",
-  "/tools/character-counter",
-  "/tools/percentage-calculator",
-  "/tools/discount-calculator",
-  "/tools/dday-calculator",
-  "/tools/random-picker",
-  "/tools/password-generator",
-  "/tools/text-cleaner",
-  "/tools/pyeong-calculator",
-  "/tools/age-calculator",
-  "/tools/unit-converter",
-  "/tools/loan-calculator",
-  "/tools/compound-interest-calculator",
-  "/tools/time-calculator",
-  "/tools/average-calculator",
-  "/tools/vat-calculator",
-  "/tools/margin-calculator",
-  "/tools/fuel-cost-calculator"
-];
+const requiredRoutes = publicRoutes();
 
 const landingExpectations = {
   "/business": {
