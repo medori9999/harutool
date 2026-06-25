@@ -186,6 +186,7 @@ async function main() {
   expect(home.headers["permissions-policy"]?.includes("geolocation=()"), "공개 홈에 Permissions-Policy 헤더가 있습니다.");
   expect(home.body.includes(`<link rel="canonical" href="${SITE_URL}/"`), "공개 홈 canonical이 SITE_URL과 일치합니다.");
   expect(home.body.includes('"@type":"Organization"'), "공개 홈 구조화 데이터에 Organization이 있습니다.");
+  expect(home.body.includes('<link rel="preload" href="/app.js?v=12" as="script"'), "공개 홈이 앱 스크립트를 preload합니다.");
   expect(!home.body.includes("{{"), "공개 홈에 템플릿 자리표시자가 없습니다.");
   expect(!/localhost|127\.0\.0\.1/.test(home.body), "공개 홈에 로컬 주소가 없습니다.");
 

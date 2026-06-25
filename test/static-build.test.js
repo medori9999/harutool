@@ -112,6 +112,14 @@ test("static build contains crawler and trust files", () => {
   assert.doesNotMatch(sitemap, /localhost|127\.0\.0\.1/);
 });
 
+test("index pages preload the app script for faster interaction", () => {
+  for (const file of ["index.html", "business.html", "business/smartstore-margin.html", "finance.html"]) {
+    const html = fs.readFileSync(path.join(DIST, file), "utf8");
+    assert.match(html, /<link rel="preload" href="\/app\.js\?v=12" as="script" \/>/);
+    assert.match(html, /<script src="\/app\.js\?v=12" defer><\/script>/);
+  }
+});
+
 test("Cloudflare redirects legacy trust URLs to canonical clean URLs", () => {
   const redirects = fs.readFileSync(path.join(DIST, "_redirects"), "utf8");
 

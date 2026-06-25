@@ -214,6 +214,7 @@ if (fs.existsSync(path.join(DIST, "index.html"))) {
   expect(index.includes(`<link rel="canonical" href="${SITE_URL}/"`), "홈 canonical이 공개 URL입니다.");
   expect(index.includes('"@type":"Organization"'), "홈 구조화 데이터에 Organization이 있습니다.");
   expect(index.includes('"@type":"ItemList"'), "홈 구조화 데이터에 도구 목록이 있습니다.");
+  expect(index.includes('<link rel="preload" href="/app.js?v=12" as="script"'), "홈이 앱 스크립트를 preload합니다.");
   if (fs.existsSync(path.join(DIST, "app.js"))) {
     expectAdConsentGate(index, readDist("app.js"));
   }
