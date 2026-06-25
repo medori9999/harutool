@@ -3,6 +3,8 @@ const http = require("node:http");
 
 const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
 const CLOUDFLARE_WEB_ANALYTICS_TOKEN = process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN || "";
+const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION || "";
+const NAVER_SITE_VERIFICATION = process.env.NAVER_SITE_VERIFICATION || "";
 
 const requiredRoutes = [
   "/",
@@ -126,6 +128,21 @@ function expectAnalyticsState(response, route) {
   }
 }
 
+function expectSearchVerificationState(response, route) {
+  if (GOOGLE_SITE_VERIFICATION) {
+    expect(
+      response.body.includes(`<meta name="google-site-verification" content="${GOOGLE_SITE_VERIFICATION}"`),
+      `${route}에 Google Search Console 인증 메타가 있습니다.`
+    );
+  }
+  if (NAVER_SITE_VERIFICATION) {
+    expect(
+      response.body.includes(`<meta name="naver-site-verification" content="${NAVER_SITE_VERIFICATION}"`),
+      `${route}에 네이버 서치어드바이저 인증 메타가 있습니다.`
+    );
+  }
+}
+
 async function main() {
   const home = await request("/");
   expect(home.statusCode === 200, "홈이 200으로 응답합니다.");
@@ -165,6 +182,7 @@ async function main() {
     expectIndexableRoute(page, route);
     expectLandingPage(page, route);
     expectAnalyticsState(page, route);
+    expectSearchVerificationState(page, route);
   }
 
   const legacyAbout = await request("/about.html", { method: "HEAD" });
