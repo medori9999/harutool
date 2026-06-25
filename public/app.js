@@ -41,6 +41,11 @@ const landingList = [
       "/tools/loan-calculator",
       "/tools/fuel-cost-calculator"
     ],
+    relatedPages: [
+      "/business/smartstore-margin",
+      "/business/coupang-margin",
+      "/business/vat-price"
+    ],
     steps: [
       ["원가와 수수료 확인", "마진율 계산기로 순이익과 손익분기 판매가를 먼저 봅니다."],
       ["부가세 포함 여부 확인", "부가세 계산기로 공급가액과 합계금액을 나눕니다."],
@@ -286,6 +291,9 @@ function renderHome() {
 
 function renderLandingPage(landing) {
   const landingTools = landing.tools.map((path) => toolList.find((tool) => tool.path === path)).filter(Boolean);
+  const relatedPages = (landing.relatedPages || [])
+    .map((path) => landingList.find((item) => item.path === path))
+    .filter(Boolean);
   app.innerHTML = `
     <div class="tool-page landing-page">
       <div class="breadcrumbs"><a href="/">홈</a> &nbsp;/&nbsp; ${landing.title}</div>
@@ -305,6 +313,19 @@ function renderLandingPage(landing) {
         </div>
         <div class="tool-grid">${toolCards(landingTools, true)}</div>
       </section>
+      ${relatedPages.length ? `<section class="landing-section">
+        <div class="section-head">
+          <div><h2>상황별 판매자 계산 가이드</h2><p>스마트스토어, 쿠팡, 부가세 포함 가격처럼 더 구체적인 계산 페이지입니다.</p></div>
+        </div>
+        <div class="landing-grid">
+          ${relatedPages.map((page) => `
+            <a class="landing-card" href="${page.path}">
+              <span class="eyebrow">${page.eyebrow}</span>
+              <h3>${page.title}</h3>
+              <p>${page.description}</p>
+            </a>`).join("")}
+        </div>
+      </section>` : ""}
       <section class="info-section">
         <h2>계산 순서 추천</h2>
         <ol class="step-list">

@@ -209,7 +209,10 @@ test("business landing page targets commercial search intent", async () => {
     "/tools/margin-calculator",
     "/tools/vat-calculator",
     "/tools/discount-calculator",
-    "/tools/loan-calculator"
+    "/tools/loan-calculator",
+    "/business/smartstore-margin",
+    "/business/coupang-margin",
+    "/business/vat-price"
   ]) {
     assert.match(html, new RegExp(`href="${route}"`));
   }

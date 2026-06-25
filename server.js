@@ -63,6 +63,11 @@ const landingPages = {
       "/tools/loan-calculator",
       "/tools/fuel-cost-calculator"
     ],
+    relatedPages: [
+      "/business/smartstore-margin",
+      "/business/coupang-margin",
+      "/business/vat-price"
+    ],
     faqs: [
       ["판매가를 정할 때 무엇부터 계산해야 하나요?", "상품 원가, 플랫폼 수수료, 포장비, 배송비, 광고비를 먼저 더한 뒤 원하는 순이익을 남길 수 있는 판매가를 계산하는 편이 안전합니다."],
       ["마진율과 부가세 계산을 따로 해야 하나요?", "부가세 포함 가격으로 판매한다면 공급가액과 부가세를 먼저 나누고, 실제 비용과 수수료를 반영해 순이익 기준 마진율을 다시 확인하는 것이 좋습니다."],
@@ -413,6 +418,14 @@ function renderInitialContent(route, meta) {
         <p>${escapeHtml(tool.description)}</p>
       </a>`;
     }).join("");
+    const relatedPageCards = (landing.relatedPages || []).map((landingRoute) => {
+      const relatedLanding = landingPages[landingRoute];
+      return `<a class="landing-card" href="${landingRoute}">
+        <span class="eyebrow">${escapeHtml(relatedLanding.eyebrow || "상황별 계산")}</span>
+        <h3>${escapeHtml(relatedLanding.name)}</h3>
+        <p>${escapeHtml(relatedLanding.description)}</p>
+      </a>`;
+    }).join("");
     const faqs = landing.faqs.map(([question, answer]) => `
       <details>
         <summary>${escapeHtml(question)}</summary>
@@ -429,6 +442,10 @@ function renderInitialContent(route, meta) {
         <div class="section-head"><div><h2>사업자에게 먼저 필요한 계산기</h2><p>판매가와 비용 판단에 바로 쓰는 도구입니다.</p></div></div>
         <div class="tool-grid">${toolCards}</div>
       </section>
+      ${relatedPageCards ? `<section class="landing-section">
+        <div class="section-head"><div><h2>상황별 판매자 계산 가이드</h2><p>스마트스토어, 쿠팡, 부가세 포함 가격처럼 더 구체적인 검색 의도로 이어집니다.</p></div></div>
+        <div class="landing-grid">${relatedPageCards}</div>
+      </section>` : ""}
       ${landing.steps ? `<section class="info-section">
         <h2>계산 순서 추천</h2>
         <ol class="step-list">

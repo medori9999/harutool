@@ -39,7 +39,14 @@ const requiredRoutes = [
 const landingExpectations = {
   "/business": {
     keywords: ["사업자 계산기 모음", "스마트스토어", "마진율", "부가세"],
-    toolLinks: ["/tools/margin-calculator", "/tools/vat-calculator", "/tools/discount-calculator"]
+    toolLinks: [
+      "/tools/margin-calculator",
+      "/tools/vat-calculator",
+      "/tools/discount-calculator",
+      "/business/smartstore-margin",
+      "/business/coupang-margin",
+      "/business/vat-price"
+    ]
   },
   "/business/smartstore-margin": {
     keywords: ["스마트스토어 마진 계산", "네이버페이", "광고비", "판매가"],
