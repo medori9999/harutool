@@ -193,6 +193,11 @@ async function main() {
   expect(privacy.statusCode === 200, "/privacy가 200으로 응답합니다.");
   expect(privacy.body.includes(`<link rel="canonical" href="${SITE_URL}/privacy"`), "/privacy canonical이 SITE_URL과 일치합니다.");
   expect(privacy.body.includes('"@type":"WebPage"'), "/privacy 구조화 데이터에 WebPage가 있습니다.");
+  expect(privacy.body.includes("Cloudflare Web Analytics"), "/privacy에 방문 통계 도구 안내가 있습니다.");
+  expect(privacy.body.includes("Core Web Vitals"), "/privacy에 성능 지표 사용 목적 안내가 있습니다.");
+  expect(privacy.body.includes("Google AdSense"), "/privacy에 Google 광고 제공자 안내가 있습니다.");
+  expect(privacy.body.includes("선택 쿠키에 동의한 뒤에만 광고 스크립트"), "/privacy에 광고 동의 후 로드 원칙 안내가 있습니다.");
+  expect(privacy.body.includes("Google 광고 설정"), "/privacy에 맞춤 광고 관리 링크 안내가 있습니다.");
 
   const missing = await request("/missing-page-for-audit");
   expect(missing.statusCode === 404, "없는 공개 URL이 404로 응답합니다.");

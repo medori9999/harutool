@@ -187,6 +187,15 @@ if (fs.existsSync(path.join(DIST, "404.html"))) {
   expect(notFound.includes('<span class="error-code">404</span>'), "404.html에 404 안내가 있습니다.");
 }
 
+if (fs.existsSync(path.join(DIST, "privacy.html"))) {
+  const privacy = readDist("privacy.html");
+  expect(privacy.includes("Cloudflare Web Analytics"), "개인정보처리방침에 방문 통계 도구가 안내되어 있습니다.");
+  expect(privacy.includes("Core Web Vitals"), "개인정보처리방침에 성능 지표 사용 목적이 안내되어 있습니다.");
+  expect(privacy.includes("Google AdSense"), "개인정보처리방침에 Google 광고 제공자가 안내되어 있습니다.");
+  expect(privacy.includes("선택 쿠키에 동의한 뒤에만 광고 스크립트"), "개인정보처리방침에 광고 동의 후 로드 원칙이 안내되어 있습니다.");
+  expect(privacy.includes("Google 광고 설정"), "개인정보처리방침에 맞춤 광고 관리 링크가 안내되어 있습니다.");
+}
+
 for (const [file, expectation] of Object.entries(landingExpectations)) {
   if (!fs.existsSync(path.join(DIST, file))) {
     fail(`${file} 랜딩 페이지가 없습니다.`);
