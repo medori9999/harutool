@@ -7,6 +7,9 @@ const ENV_EXAMPLE = path.join(ROOT, ".env.example");
 const PACKAGE_JSON = path.join(ROOT, "package.json");
 const WRANGLER_CONFIG = path.join(ROOT, "wrangler.jsonc");
 const OPERATIONS_DOC = path.join(ROOT, "docs", "operations.md");
+const NODE_VERSION_FILE = path.join(ROOT, ".node-version");
+const GITHUB_VERIFY_WORKFLOW = path.join(ROOT, ".github", "workflows", "verify.yml");
+const RENDER_CONFIG = path.join(ROOT, "render.yaml");
 const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
 const { publicRoutes } = require("../server");
 
@@ -27,6 +30,7 @@ const requiredPublicRoutes = publicRoutes();
 
 const requiredEnvKeys = [
   "PORT",
+  "NODE_VERSION",
   "SITE_URL",
   "GOOGLE_SITE_VERIFICATION",
   "NAVER_SITE_VERIFICATION",
@@ -174,12 +178,28 @@ if (fs.existsSync(PACKAGE_JSON)) {
   const pkg = readJson("package.json");
   expect(pkg.scripts?.build === "npm run build:static && npm run test:static", "package.json의 build 명령이 정적 빌드와 테스트를 실행합니다.");
   expect(pkg.scripts?.verify?.includes("npm run audit:launch"), "package.json의 verify 명령이 출시 감사를 포함합니다.");
+  expect(pkg.engines?.node === ">=22 <23", "package.json의 Node 엔진이 22 버전대로 고정되어 있습니다.");
 }
 
 if (fs.existsSync(WRANGLER_CONFIG)) {
   const wrangler = readJson("wrangler.jsonc");
   expect(wrangler.name === "harutool", "wrangler.jsonc의 Pages 프로젝트 이름이 harutool입니다.");
   expect(wrangler.pages_build_output_dir === "./dist", "wrangler.jsonc의 Pages 출력 디렉터리가 ./dist입니다.");
+}
+
+expect(fs.existsSync(NODE_VERSION_FILE), ".node-version 파일이 있습니다.");
+if (fs.existsSync(NODE_VERSION_FILE)) {
+  expect(fs.readFileSync(NODE_VERSION_FILE, "utf8").trim() === "22", ".node-version이 Node 22를 가리킵니다.");
+}
+
+if (fs.existsSync(GITHUB_VERIFY_WORKFLOW)) {
+  const workflow = fs.readFileSync(GITHUB_VERIFY_WORKFLOW, "utf8");
+  expect(workflow.includes("node-version: 22"), "GitHub Actions 검증이 Node 22로 실행됩니다.");
+}
+
+if (fs.existsSync(RENDER_CONFIG)) {
+  const renderConfig = fs.readFileSync(RENDER_CONFIG, "utf8");
+  expect(renderConfig.includes("key: NODE_VERSION") && renderConfig.includes("value: 22"), "Render 설정이 Node 22를 사용합니다.");
 }
 
 for (const file of requiredFiles) {

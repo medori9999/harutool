@@ -16,6 +16,6 @@
     "verify": "npm run check && npm test && CF_PAGES_URL=https://preview.harutool.pages.dev npm run build && npm run audit:launch"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22 <23"
   }
 }
