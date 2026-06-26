@@ -604,11 +604,26 @@ function publicRoutes() {
   return [...Object.keys(tools), ...Object.keys(landingPages), ...Object.keys(trustPages)];
 }
 
+function sitemapRouteMeta(route) {
+  if (route === "/") return { changefreq: "weekly", priority: "1.0" };
+  if (route === "/business") return { changefreq: "weekly", priority: "0.9" };
+  if (route.startsWith("/business/")) return { changefreq: "weekly", priority: "0.8" };
+  if (["/tools/margin-calculator", "/tools/vat-calculator", "/tools/discount-calculator"].includes(route)) {
+    return { changefreq: "weekly", priority: "0.8" };
+  }
+  if (route.startsWith("/tools/")) return { changefreq: "monthly", priority: "0.7" };
+  if (route === "/finance") return { changefreq: "monthly", priority: "0.7" };
+  return { changefreq: "monthly", priority: "0.4" };
+}
+
 function sitemap() {
   const baseUrl = (process.env.SITE_URL || "http://localhost:3000").replace(/\/$/, "");
   const routes = publicRoutes();
   const urls = routes
-    .map((route) => `<url><loc>${baseUrl}${route}</loc><lastmod>${SITEMAP_LASTMOD}</lastmod></url>`)
+    .map((route) => {
+      const meta = sitemapRouteMeta(route);
+      return `<url><loc>${baseUrl}${route}</loc><lastmod>${SITEMAP_LASTMOD}</lastmod><changefreq>${meta.changefreq}</changefreq><priority>${meta.priority}</priority></url>`;
+    })
     .join("");
   return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
 }

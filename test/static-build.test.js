@@ -101,9 +101,15 @@ test("static build contains crawler and trust files", () => {
   const sitemap = fs.readFileSync(path.join(DIST, "sitemap.xml"), "utf8");
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
+  const changefreqs = [...sitemap.matchAll(/<changefreq>([^<]+)<\/changefreq>/g)].map((match) => match[1]);
+  const priorities = [...sitemap.matchAll(/<priority>([^<]+)<\/priority>/g)].map((match) => match[1]);
   assert.match(robots, new RegExp(`Sitemap: ${SITE_URL}/sitemap\\.xml`));
   assert.equal(lastmods.length, locations.length);
+  assert.equal(changefreqs.length, locations.length);
+  assert.equal(priorities.length, locations.length);
   assert.ok(lastmods.every((lastmod) => lastmod === SITEMAP_LASTMOD));
+  assert.match(sitemap, new RegExp(`<loc>${SITE_URL}/business</loc><lastmod>${SITEMAP_LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>0\\.9</priority>`));
+  assert.match(sitemap, new RegExp(`<loc>${SITE_URL}/tools/margin-calculator</loc><lastmod>${SITEMAP_LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>0\\.8</priority>`));
   for (const route of ["/about", "/terms", "/privacy", "/contact", ...landingRoutes.map((route) => `/${route}`)]) {
     assert.match(sitemap, new RegExp(`<loc>${SITE_URL}${route}</loc>`));
   }

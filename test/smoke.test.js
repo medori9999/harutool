@@ -173,12 +173,18 @@ test("sitemap and robots expose the public URL set", async () => {
   const sitemap = await sitemapResponse.text();
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
+  const changefreqs = [...sitemap.matchAll(/<changefreq>([^<]+)<\/changefreq>/g)].map((match) => match[1]);
+  const priorities = [...sitemap.matchAll(/<priority>([^<]+)<\/priority>/g)].map((match) => match[1]);
   const expectedRoutes = ["/", ...landingRoutes, ...toolRoutes, ...trustRoutes];
 
   assert.equal(sitemapResponse.status, 200);
   assert.equal(locations.length, expectedRoutes.length);
   assert.equal(lastmods.length, expectedRoutes.length);
+  assert.equal(changefreqs.length, expectedRoutes.length);
+  assert.equal(priorities.length, expectedRoutes.length);
   assert.ok(lastmods.every((lastmod) => lastmod === "2026-06-23"));
+  assert.match(sitemap, new RegExp(`<loc>${SITE_URL}/business</loc><lastmod>2026-06-23</lastmod><changefreq>weekly</changefreq><priority>0\\.9</priority>`));
+  assert.match(sitemap, new RegExp(`<loc>${SITE_URL}/tools/margin-calculator</loc><lastmod>2026-06-23</lastmod><changefreq>weekly</changefreq><priority>0\\.8</priority>`));
   assert.equal(new Set(locations).size, expectedRoutes.length);
   for (const route of expectedRoutes) assert.ok(locations.includes(`${SITE_URL}${route}`));
   assert.doesNotMatch(sitemap, /localhost|127\.0\.0\.1/);

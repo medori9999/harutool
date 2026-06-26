@@ -183,7 +183,15 @@ async function main() {
   expect(sitemap.statusCode === 200, "sitemap.xml이 200으로 응답합니다.");
   const locations = [...sitemap.body.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   const lastmods = [...sitemap.body.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
+  const changefreqs = [...sitemap.body.matchAll(/<changefreq>([^<]+)<\/changefreq>/g)].map((match) => match[1]);
+  const priorities = [...sitemap.body.matchAll(/<priority>([^<]+)<\/priority>/g)].map((match) => match[1]);
   expect(lastmods.length === locations.length, "공개 sitemap의 모든 URL에 lastmod가 있습니다.");
+  expect(changefreqs.length === locations.length, "공개 sitemap의 모든 URL에 changefreq가 있습니다.");
+  expect(priorities.length === locations.length, "공개 sitemap의 모든 URL에 priority가 있습니다.");
+  expect(sitemap.body.includes(`<loc>${SITE_URL}/business</loc><lastmod>`), "공개 sitemap에 사업자 랜딩이 있습니다.");
+  expect(sitemap.body.includes("<changefreq>weekly</changefreq><priority>0.9</priority>"), "공개 sitemap에서 사업자 랜딩 우선순위가 높게 설정되어 있습니다.");
+  expect(sitemap.body.includes(`<loc>${SITE_URL}/tools/margin-calculator</loc>`), "공개 sitemap에 핵심 마진 계산기가 있습니다.");
+  expect(sitemap.body.includes("<changefreq>weekly</changefreq><priority>0.8</priority>"), "공개 sitemap에서 핵심 계산기 우선순위가 설정되어 있습니다.");
   expect(!/localhost|127\.0\.0\.1/.test(sitemap.body), "공개 sitemap에 로컬 주소가 없습니다.");
   for (const route of requiredRoutes) {
     expect(locations.includes(`${SITE_URL}${route}`), `공개 sitemap에 ${route}가 있습니다.`);

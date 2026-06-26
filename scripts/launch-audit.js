@@ -180,10 +180,18 @@ if (fs.existsSync(path.join(DIST, "robots.txt")) && fs.existsSync(path.join(DIST
   const sitemap = readDist("sitemap.xml");
   const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1]);
+  const changefreqs = [...sitemap.matchAll(/<changefreq>([^<]+)<\/changefreq>/g)].map((match) => match[1]);
+  const priorities = [...sitemap.matchAll(/<priority>([^<]+)<\/priority>/g)].map((match) => match[1]);
 
   expect(robots.includes(`Sitemap: ${SITE_URL}/sitemap.xml`), "robots.txt가 공개 sitemap URL을 가리킵니다.");
   expect(!/localhost|127\.0\.0\.1/.test(sitemap), "sitemap에 로컬 주소가 없습니다.");
   expect(lastmods.length === sitemapLocations.length, "sitemap의 모든 URL에 lastmod가 있습니다.");
+  expect(changefreqs.length === sitemapLocations.length, "sitemap의 모든 URL에 changefreq가 있습니다.");
+  expect(priorities.length === sitemapLocations.length, "sitemap의 모든 URL에 priority가 있습니다.");
+  expect(sitemap.includes(`<loc>${SITE_URL}/business</loc><lastmod>`), "sitemap에 사업자 랜딩이 있습니다.");
+  expect(sitemap.includes("<changefreq>weekly</changefreq><priority>0.9</priority>"), "sitemap에서 사업자 랜딩 우선순위가 높게 설정되어 있습니다.");
+  expect(sitemap.includes(`<loc>${SITE_URL}/tools/margin-calculator</loc>`), "sitemap에 핵심 마진 계산기가 있습니다.");
+  expect(sitemap.includes("<changefreq>weekly</changefreq><priority>0.8</priority>"), "sitemap에서 핵심 계산기 우선순위가 설정되어 있습니다.");
 
   for (const route of requiredPublicRoutes) {
     expect(sitemapLocations.includes(`${SITE_URL}${route}`), `sitemap에 ${route}가 있습니다.`);
