@@ -150,6 +150,9 @@ if (fs.existsSync(OPERATIONS_DOC)) {
   expect(operationsDoc.includes("Google AdSense"), "운영 문서에 광고 수익 확인 위치가 있습니다.");
   expect(operationsDoc.includes("audit:live"), "운영 문서에 공개 배포 점검 명령이 있습니다.");
   expect(operationsDoc.includes("색인 요청 우선순위"), "운영 문서에 색인 요청 우선순위가 있습니다.");
+  expect(operationsDoc.includes("검색 노출 주간 기록"), "운영 문서에 검색 노출 주간 기록 템플릿이 있습니다.");
+  expect(operationsDoc.includes("노출수는 있는데 CTR 1% 미만"), "운영 문서에 CTR 개선 판단 기준이 있습니다.");
+  expect(operationsDoc.includes("방문자는 있는데 광고 수익 0원"), "운영 문서에 광고 수익 0원 점검 기준이 있습니다.");
   expect(operationsDoc.includes("https://harutool.pages.dev/business/smartstore-margin"), "운영 문서에 스마트스토어 랜딩 색인 요청 URL이 있습니다.");
   expect(operationsDoc.includes("https://harutool.pages.dev/business/coupang-margin"), "운영 문서에 쿠팡 랜딩 색인 요청 URL이 있습니다.");
   expect(operationsDoc.includes("https://harutool.pages.dev/business/vat-price"), "운영 문서에 부가세 랜딩 색인 요청 URL이 있습니다.");
