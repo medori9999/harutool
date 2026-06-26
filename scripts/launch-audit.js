@@ -67,6 +67,13 @@ const landingExpectations = {
   }
 };
 
+const trustDescriptionExpectations = {
+  "about.html": ["운영 원칙", "광고"],
+  "terms.html": ["이용 조건", "계산 결과"],
+  "privacy.html": ["Cloudflare Web Analytics", "Google AdSense"],
+  "contact.html": ["오류 제보", "광고"]
+};
+
 const checks = [];
 
 function pass(message) {
@@ -118,6 +125,10 @@ function expect(condition, message) {
 
 function verificationMeta(name, content) {
   return `<meta name="${name}" content="${content}"`;
+}
+
+function metaDescription(html) {
+  return html.match(/<meta name="description" content="([^"]+)"/)?.[1] || "";
 }
 
 function expectAdConsentGate(html, appJs) {
@@ -237,6 +248,15 @@ for (const [file, expectation] of Object.entries(landingExpectations)) {
   }
   for (const toolLink of expectation.toolLinks) {
     expect(html.includes(`href="${toolLink}"`), `${file}에서 ${toolLink}로 연결됩니다.`);
+  }
+}
+
+for (const [file, keywords] of Object.entries(trustDescriptionExpectations)) {
+  if (!fs.existsSync(path.join(DIST, file))) continue;
+  const description = metaDescription(readDist(file));
+  expect(description.length >= 50, `${file} 검색 설명이 충분히 구체적입니다.`);
+  for (const keyword of keywords) {
+    expect(description.includes(keyword), `${file} 검색 설명에 ${keyword} 문구가 있습니다.`);
   }
 }
 

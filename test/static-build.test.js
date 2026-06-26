@@ -44,10 +44,23 @@ const landingExpectedKeywords = {
   "finance": ["이자 계산기 모음", "복리"]
 };
 
+const trustDescriptionKeywords = {
+  "about.html": ["운영 원칙", "광고"],
+  "terms.html": ["이용 조건", "계산 결과"],
+  "privacy.html": ["Cloudflare Web Analytics", "Google AdSense"],
+  "contact.html": ["오류 제보", "광고"]
+};
+
 function extractJsonLd(html) {
   const match = html.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/);
   assert.ok(match, "JSON-LD 스크립트가 있어야 합니다.");
   return JSON.parse(match[1]);
+}
+
+function extractDescription(html) {
+  const match = html.match(/<meta name="description" content="([^"]+)"/);
+  assert.ok(match, "검색 설명 메타가 있어야 합니다.");
+  return match[1];
 }
 
 test("static build contains all search landing pages", () => {
@@ -149,6 +162,11 @@ test("trust pages expose indexable SEO metadata", () => {
   for (const file of ["about.html", "terms.html", "privacy.html", "contact.html"]) {
     const route = `/${file.replace(/\.html$/, "")}`;
     const html = fs.readFileSync(path.join(DIST, file), "utf8");
+    const description = extractDescription(html);
+    assert.ok(description.length >= 50, `${file} 검색 설명은 충분히 구체적이어야 합니다.`);
+    for (const keyword of trustDescriptionKeywords[file]) {
+      assert.match(description, new RegExp(keyword));
+    }
     assert.match(html, /<meta name="robots" content="index, follow" \/>/);
     assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}${route}"`));
     assert.match(html, new RegExp(`<meta property="og:url" content="${SITE_URL}${route}"`));

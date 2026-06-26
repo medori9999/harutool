@@ -39,6 +39,13 @@ const landingExpectations = {
   }
 };
 
+const trustDescriptionExpectations = {
+  "/about": ["운영 원칙", "광고"],
+  "/terms": ["이용 조건", "계산 결과"],
+  "/privacy": ["Cloudflare Web Analytics", "Google AdSense"],
+  "/contact": ["오류 제보", "광고"]
+};
+
 const checks = [];
 
 function pass(message) {
@@ -87,12 +94,19 @@ function expectImmutableAsset(response, pathname, expectedType) {
 
 function expectIndexableRoute(response, route) {
   const contentType = response.headers["content-type"] || "";
+  const description = response.body.match(/<meta name="description" content="([^"]+)"/)?.[1] || "";
 
   expect(response.statusCode === 200, `${route} 공개 URL이 200으로 응답합니다.`);
   expect(contentType.includes("text/html"), `${route}가 HTML로 응답합니다.`);
   expect(response.body.includes(`<link rel="canonical" href="${SITE_URL}${route === "/" ? "/" : route}"`), `${route} canonical이 공개 URL과 일치합니다.`);
   expect(response.body.includes('<meta name="robots" content="index, follow"'), `${route}가 index, follow로 설정되어 있습니다.`);
-  expect(/<meta name="description" content="[^"]+"/.test(response.body), `${route}에 검색 설명 메타가 있습니다.`);
+  expect(Boolean(description), `${route}에 검색 설명 메타가 있습니다.`);
+  if (trustDescriptionExpectations[route]) {
+    expect(description.length >= 50, `${route} 검색 설명이 충분히 구체적입니다.`);
+    for (const keyword of trustDescriptionExpectations[route]) {
+      expect(description.includes(keyword), `${route} 검색 설명에 ${keyword} 문구가 있습니다.`);
+    }
+  }
   expect(/<h1(?:\s[^>]*)?>[\s\S]*?<\/h1>/.test(response.body), `${route}에 대표 제목 h1이 있습니다.`);
   expect(!response.body.includes("{{"), `${route}에 템플릿 자리표시자가 없습니다.`);
   expect(!/localhost|127\.0\.0\.1/.test(response.body), `${route}에 로컬 주소가 없습니다.`);

@@ -35,6 +35,13 @@ const trustRoutes = [
   "/contact"
 ];
 
+const trustDescriptionKeywords = {
+  "/about": ["운영 원칙", "광고"],
+  "/terms": ["이용 조건", "계산 결과"],
+  "/privacy": ["Cloudflare Web Analytics", "Google AdSense"],
+  "/contact": ["오류 제보", "광고"]
+};
+
 const landingRoutes = [
   "/business",
   "/business/smartstore-margin",
@@ -54,6 +61,12 @@ function extractJsonLd(html) {
   const match = html.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/);
   assert.ok(match, "JSON-LD 스크립트가 있어야 합니다.");
   return JSON.parse(match[1]);
+}
+
+function extractDescription(html) {
+  const match = html.match(/<meta name="description" content="([^"]+)"/);
+  assert.ok(match, "검색 설명 메타가 있어야 합니다.");
+  return match[1];
 }
 
 async function waitForServer() {
@@ -280,6 +293,11 @@ test("trust pages are reachable and contain a primary heading", async (t) => {
       assert.equal(response.status, 200);
       assert.match(html, /<h1>[^<]+<\/h1>/);
       assert.match(html, /하루툴/);
+      const description = extractDescription(html);
+      assert.ok(description.length >= 50, "신뢰 페이지 검색 설명은 충분히 구체적이어야 합니다.");
+      for (const keyword of trustDescriptionKeywords[route]) {
+        assert.match(description, new RegExp(keyword));
+      }
       assert.match(html, /<meta name="robots" content="index, follow"/);
       assert.match(html, new RegExp(`<link rel="canonical" href="${SITE_URL}${route}"`));
       assert.match(html, new RegExp(`<meta property="og:url" content="${SITE_URL}${route}"`));

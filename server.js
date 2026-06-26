@@ -34,19 +34,19 @@ const trustPages = {
 const trustPageMeta = {
   "/about": {
     title: "하루툴 소개",
-    description: "하루툴이 만드는 계산기와 생활 도구의 운영 원칙을 소개합니다."
+    description: "하루툴이 제공하는 계산기·텍스트 도구의 운영 원칙, 브라우저 내 처리, 광고 구분과 오류 제보 방식을 안내합니다."
   },
   "/terms": {
     title: "이용약관 | 하루툴",
-    description: "하루툴 서비스 이용 조건과 계산 결과에 관한 안내입니다."
+    description: "하루툴 계산기와 텍스트 도구 이용 조건, 계산 결과의 참고 성격, 광고·외부 서비스 안내를 정리한 이용약관입니다."
   },
   "/privacy": {
     title: "개인정보처리방침 | 하루툴",
-    description: "하루툴 개인정보처리방침"
+    description: "하루툴 입력 데이터 처리, 로컬 저장소, Cloudflare Web Analytics, Google AdSense 광고와 선택 쿠키 기준을 설명합니다."
   },
   "/contact": {
     title: "문의 및 오류 제보 | 하루툴",
-    description: "하루툴 계산 오류, 기능 제안과 광고 관련 문의 방법을 안내합니다."
+    description: "하루툴 계산 오류, 기능 제안, 광고 관련 문의와 오류 제보에 포함하면 좋은 정보를 안내합니다."
   }
 };
 
