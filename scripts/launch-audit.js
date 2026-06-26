@@ -149,6 +149,11 @@ if (fs.existsSync(OPERATIONS_DOC)) {
   expect(operationsDoc.includes("네이버 서치어드바이저"), "운영 문서에 네이버 수집 확인 위치가 있습니다.");
   expect(operationsDoc.includes("Google AdSense"), "운영 문서에 광고 수익 확인 위치가 있습니다.");
   expect(operationsDoc.includes("audit:live"), "운영 문서에 공개 배포 점검 명령이 있습니다.");
+  expect(operationsDoc.includes("색인 요청 우선순위"), "운영 문서에 색인 요청 우선순위가 있습니다.");
+  expect(operationsDoc.includes("https://harutool.pages.dev/business/smartstore-margin"), "운영 문서에 스마트스토어 랜딩 색인 요청 URL이 있습니다.");
+  expect(operationsDoc.includes("https://harutool.pages.dev/business/coupang-margin"), "운영 문서에 쿠팡 랜딩 색인 요청 URL이 있습니다.");
+  expect(operationsDoc.includes("https://harutool.pages.dev/business/vat-price"), "운영 문서에 부가세 랜딩 색인 요청 URL이 있습니다.");
+  expect(operationsDoc.includes("https://harutool.pages.dev/tools/margin-calculator"), "운영 문서에 핵심 마진 계산기 색인 요청 URL이 있습니다.");
 }
 
 if (fs.existsSync(PACKAGE_JSON)) {

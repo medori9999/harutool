@@ -28,6 +28,21 @@
 4. 검색어가 생기면 노출은 있는데 CTR이 낮은 페이지부터 제목과 설명을 개선합니다.
 5. 검색어가 전혀 없으면 새 기능보다 기존 도구 설명, FAQ, 사용 예시를 보강하는 편이 먼저입니다.
 
+### 색인 요청 우선순위
+
+Search Console과 네이버 서치어드바이저에서 URL 검사를 할 때는 아래 순서로 요청합니다. 전부 한 번에 많이 넣기보다, 검색 의도가 분명한 페이지부터 먼저 확인합니다.
+
+1. `https://harutool.pages.dev/`
+2. `https://harutool.pages.dev/business`
+3. `https://harutool.pages.dev/business/smartstore-margin`
+4. `https://harutool.pages.dev/business/coupang-margin`
+5. `https://harutool.pages.dev/business/vat-price`
+6. `https://harutool.pages.dev/tools/margin-calculator`
+7. `https://harutool.pages.dev/tools/vat-calculator`
+8. `https://harutool.pages.dev/tools/discount-calculator`
+
+위 URL은 현재 광고 수익화 테스트에서 가장 중요한 “판매자·사업자 계산” 검색 의도를 담당합니다. Search Console에서 노출이 생기면 이 목록의 페이지별 검색어, CTR, 평균 게재순위를 먼저 비교합니다.
+
 ## AdSense 수익 확인 전제
 
 AdSense 보고서에 수익이 잡히려면 아래 조건이 모두 필요합니다.
