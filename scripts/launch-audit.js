@@ -50,15 +50,15 @@ const landingExpectations = {
     ]
   },
   "business/smartstore-margin.html": {
-    keywords: ["스마트스토어 마진 계산", "네이버페이", "광고비", "판매가"],
+    keywords: ["스마트스토어 마진 계산", "네이버페이", "광고비", "손익분기 판매가"],
     toolLinks: ["/tools/margin-calculator", "/tools/vat-calculator", "/tools/discount-calculator"]
   },
   "business/coupang-margin.html": {
-    keywords: ["쿠팡 판매가 마진 계산", "배송비", "손익분기", "수수료"],
+    keywords: ["쿠팡 판매가 마진 계산", "배송비", "손익분기 판매가", "카테고리 수수료"],
     toolLinks: ["/tools/margin-calculator", "/tools/discount-calculator", "/tools/vat-calculator"]
   },
   "business/vat-price.html": {
-    keywords: ["부가세 포함 가격 계산", "공급가액", "VAT", "합계금액"],
+    keywords: ["부가세 포함 가격 계산", "공급가액", "VAT", "역산"],
     toolLinks: ["/tools/vat-calculator", "/tools/margin-calculator", "/tools/discount-calculator"]
   },
   "finance.html": {

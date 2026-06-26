@@ -38,9 +38,9 @@ const landingRoutes = [
 
 const landingExpectedKeywords = {
   "business": ["사업자 계산기 모음", "스마트스토어"],
-  "business/smartstore-margin": ["스마트스토어 마진 계산", "네이버페이"],
-  "business/coupang-margin": ["쿠팡 판매가 마진 계산", "손익분기"],
-  "business/vat-price": ["부가세 포함 가격 계산", "공급가액"],
+  "business/smartstore-margin": ["스마트스토어 마진 계산", "손익분기 판매가"],
+  "business/coupang-margin": ["쿠팡 판매가 마진 계산", "카테고리 수수료"],
+  "business/vat-price": ["부가세 포함 가격 계산", "역산"],
   "finance": ["이자 계산기 모음", "복리"]
 };
 
