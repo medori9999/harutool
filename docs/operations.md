@@ -20,6 +20,19 @@
 
 토큰을 넣기 전에는 방문자 수가 Cloudflare Web Analytics에 쌓이지 않습니다. Cloudflare Pages 자체의 요청 수와 Web Analytics 방문자 수는 집계 방식이 다를 수 있습니다.
 
+토큰을 넣은 뒤에는 아래 명령으로 공개 사이트에 방문자 집계 스크립트가 실제 삽입됐는지 확인합니다.
+
+```bash
+REQUIRE_ANALYTICS=true SITE_URL=https://harutool.pages.dev npm run audit:live
+```
+
+로컬 빌드 산출물에서 Analytics 삽입까지 강제로 확인하려면 토큰을 환경 변수로 넣고 실행합니다.
+
+```bash
+REQUIRE_ANALYTICS=true CLOUDFLARE_WEB_ANALYTICS_TOKEN=발급받은_토큰 npm run build
+REQUIRE_ANALYTICS=true CLOUDFLARE_WEB_ANALYTICS_TOKEN=발급받은_토큰 npm run audit:launch
+```
+
 ## Search Console·네이버 확인 루틴
 
 1. `https://harutool.pages.dev/sitemap.xml` 제출 상태가 성공인지 확인합니다.

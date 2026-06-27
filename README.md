@@ -101,6 +101,12 @@ AdSense 승인 후 환경 변수에 발급받은 값을 설정합니다.
 3. Pages 프로젝트의 환경 변수 `CLOUDFLARE_WEB_ANALYTICS_TOKEN`에 토큰을 저장합니다.
 4. 다시 배포한 뒤 Cloudflare Web Analytics에서 방문 수, 상위 페이지, 유입 경로와 Core Web Vitals를 확인합니다.
 
+공개 사이트에 방문자 집계 스크립트가 실제로 붙었는지 강제로 확인하려면:
+
+```bash
+REQUIRE_ANALYTICS=true SITE_URL=https://harutool.pages.dev npm run audit:live
+```
+
 Google 검색 유입은 Search Console의 실적 보고서에서 클릭수, 노출수, CTR, 평균 게재순위와 검색어를 확인합니다. 광고 수익은 AdSense 승인 후 AdSense 보고서에서 확인합니다.
 
 운영 중 매주 확인할 대시보드와 수익 집계 전제 조건은 [운영·측정 체크리스트](docs/operations.md)를 기준으로 점검합니다.

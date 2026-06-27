@@ -11,6 +11,7 @@ const NODE_VERSION_FILE = path.join(ROOT, ".node-version");
 const GITHUB_VERIFY_WORKFLOW = path.join(ROOT, ".github", "workflows", "verify.yml");
 const RENDER_CONFIG = path.join(ROOT, "render.yaml");
 const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
+const REQUIRE_ANALYTICS = process.env.REQUIRE_ANALYTICS === "true";
 const { publicRoutes } = require("../server");
 
 const requiredFiles = [
@@ -168,6 +169,7 @@ if (fs.existsSync(OPERATIONS_DOC)) {
   expect(operationsDoc.includes("검색 노출 주간 기록"), "운영 문서에 검색 노출 주간 기록 템플릿이 있습니다.");
   expect(operationsDoc.includes("노출수는 있는데 CTR 1% 미만"), "운영 문서에 CTR 개선 판단 기준이 있습니다.");
   expect(operationsDoc.includes("방문자는 있는데 광고 수익 0원"), "운영 문서에 광고 수익 0원 점검 기준이 있습니다.");
+  expect(operationsDoc.includes("REQUIRE_ANALYTICS=true"), "운영 문서에 Analytics 필수 검증 명령이 있습니다.");
   expect(operationsDoc.includes("https://harutool.pages.dev/business/smartstore-margin"), "운영 문서에 스마트스토어 랜딩 색인 요청 URL이 있습니다.");
   expect(operationsDoc.includes("https://harutool.pages.dev/business/coupang-margin"), "운영 문서에 쿠팡 랜딩 색인 요청 URL이 있습니다.");
   expect(operationsDoc.includes("https://harutool.pages.dev/business/vat-price"), "운영 문서에 부가세 랜딩 색인 요청 URL이 있습니다.");
@@ -323,6 +325,8 @@ if (process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN) {
   for (const file of existingHtmlFiles()) {
     expect(readDist(file).includes("static.cloudflareinsights.com/beacon.min.js"), `${file}에 Cloudflare Web Analytics가 삽입됩니다.`);
   }
+} else if (REQUIRE_ANALYTICS) {
+  fail("REQUIRE_ANALYTICS=true이지만 CLOUDFLARE_WEB_ANALYTICS_TOKEN이 설정되지 않았습니다.");
 } else {
   pass("Cloudflare Web Analytics 토큰 미설정 상태입니다. 토큰 추가 전이면 정상입니다.");
   for (const file of existingHtmlFiles()) {

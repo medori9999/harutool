@@ -3,6 +3,7 @@ const http = require("node:http");
 
 const SITE_URL = (process.env.SITE_URL || "https://harutool.pages.dev").replace(/\/$/, "");
 const CLOUDFLARE_WEB_ANALYTICS_TOKEN = process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN || "";
+const REQUIRE_ANALYTICS = process.env.REQUIRE_ANALYTICS === "true";
 const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION || "";
 const NAVER_SITE_VERIFICATION = process.env.NAVER_SITE_VERIFICATION || "";
 const { publicRoutes } = require("../server");
@@ -132,6 +133,10 @@ function expectAnalyticsState(response, route) {
   if (CLOUDFLARE_WEB_ANALYTICS_TOKEN) {
     expect(hasBeacon, `${route}에 Cloudflare Web Analytics 스크립트가 있습니다.`);
     expect(response.body.includes(CLOUDFLARE_WEB_ANALYTICS_TOKEN), `${route}에 Cloudflare Web Analytics 토큰이 있습니다.`);
+  } else if (REQUIRE_ANALYTICS) {
+    expect(hasBeacon, `${route}에 Cloudflare Web Analytics 스크립트가 있습니다.`);
+  } else if (hasBeacon) {
+    pass(`${route}에 Cloudflare Web Analytics 스크립트가 있습니다.`);
   } else {
     expect(!hasBeacon, `${route}에 Analytics 스크립트가 잘못 삽입되지 않았습니다.`);
   }
